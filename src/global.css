@@ -1,0 +1,44 @@
+:root {
+  --white: #ffffff;
+
+  --black: #021001;
+
+  --red: #ff6161;
+  --blue: #112592;
+
+  --purple-pri: #7040ff;
+  --purple-sec: #faf9ff;
+  --purple-thi: #6f068a09;
+
+  --gray-100: #f7f7f7;
+  --gray-200: #c5c5c5;
+  --gray-300: #b3b3b3;
+
+  background-color: var(--white);
+
+  font-family: Pretendard;
+
+  -ms-overflow-style: none;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  font-family: Presentation;
+}
+#root {
+  width: 375px;
+  height: 100svh;
+  margin: 0 auto;
+}
+@media (max-width: 374px) {
+  #root {
+    width: 100svw;
+  }
+}
+
+/*
+@font-face {
+  font-family: "Presentation";
+  src: url("../public/fonts/NotoSansKR-Medium.ttf") format("truetype");
+}*/
