@@ -2,9 +2,4 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-[build]
-  command = "npm run build"
-  publish = "build"  # Vite를 사용하면 "dist"로 변경
-
   
