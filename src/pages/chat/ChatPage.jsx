@@ -59,24 +59,35 @@ const ChatPage = () => {
     messagesDiv.appendChild(messageElement);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   };
+  const stompClientRef = useRef(null);
+
   useEffect(() => {
+    if (stompClientRef.current) return; // 이미 연결되어 있으면 실행 X
+
     const socket = new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`);
     const client = Stomp.over(socket);
+    stompClientRef.current = client;
 
-    client.connect({}, function (frame) {
+    client.connect({ "heart-beat": "10000,10000" }, function (frame) {
       console.log("Connected:" + frame);
       client.subscribe(`/topic/public/${roomId}`, function (message) {
         const receivedMessage = JSON.parse(message.body);
-        console.log("Received message:", receivedMessage);
         displayMessage(receivedMessage.content);
         readChat();
       });
     });
+    client.onDisconnect = function () {
+      console.warn("STOMP 연결이 끊어졌습니다. 1초 후 재연결 시도...");
+      setTimeout(() => connectWebSocket(), 1000);
+    };
 
     return () => {
-      if (client) client.disconnect();
+      if (stompClientRef.current) {
+        stompClientRef.current.disconnect();
+        stompClientRef.current = null;
+      }
     };
-  }, [roomId]);
+  }, []);
 
   /*
   //websockekt 연결
