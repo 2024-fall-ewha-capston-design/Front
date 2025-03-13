@@ -47,11 +47,6 @@ const ChatPage = () => {
     }
   };
 
-  //websockekt 연결
-  const stompClient = Stomp.over(
-    () => new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`)
-  );
-
   const displayMessage = (message) => {
     const messagesDiv = document.getElementById("messages");
     const messageElement = document.createElement("div");
