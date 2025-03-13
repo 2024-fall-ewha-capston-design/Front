@@ -10,7 +10,6 @@ import { getChat } from "../../api/chat";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRef } from "react";
 import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
 import { Stomp } from "@stomp/stompjs";
 import ModalComponent from "../../components/chatroom/ModalComponent";
 import MemberItem from "../../components/chatroom/MemberItem";
@@ -74,7 +73,7 @@ const ChatPage = () => {
   const sendMessage = () => {
     if (stompClient && stompClient.connected && inputMessage.trim()) {
       const message = {
-        roomId,
+        roomId: roomId,
         type: "CHAT",
         senderId: 1,
         content: inputMessage,
