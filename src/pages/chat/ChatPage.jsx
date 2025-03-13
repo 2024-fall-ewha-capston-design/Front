@@ -59,7 +59,30 @@ const ChatPage = () => {
     messagesDiv.appendChild(messageElement);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   };
+  useEffect(() => {
+    const socket = new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`);
+    const client = Stomp.over(socket);
 
+    client.connect({}, function (frame) {
+      console.log("Connected:" + frame);
+      client.subscribe(`/topic/public/${roomId}`, function (message) {
+        const receivedMessage = JSON.parse(message.body);
+        console.log("Received message:", receivedMessage);
+        displayMessage(receivedMessage.content);
+        readChat();
+      });
+    });
+
+    return () => {
+      if (client) client.disconnect();
+    };
+  }, [roomId]);
+
+  /*
+  //websockekt 연결
+  const stompClient = Stomp.over(
+    () => new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`)
+  );
   stompClient.connect({}, function (frame) {
     console.log("Connected:" + frame);
     console.log("STOMP 상태", stompClient.connected);
@@ -71,7 +94,7 @@ const ChatPage = () => {
       readChat();
     });
   });
-
+*/
   const sendMessage = () => {
     if (stompClient && stompClient.connected && inputMessage.trim()) {
       const message = {
