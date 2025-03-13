@@ -24,6 +24,7 @@ const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [showParticipants, setShowParticipants] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const stompClientRef = useRef(null);
 
   //채팅방 상세내용 조회 API 연결
   const readChatRoomDetail = async () => {
@@ -51,10 +52,8 @@ const ChatPage = () => {
     setMessages((prevMessages) => [...prevMessages, { content: message }]);
   };
 
-  const stompClientRef = useRef(null);
-
   useEffect(() => {
-    if (stompClientRef.current) return; // 중복 연결 방지
+    if (stompClientRef.current && stompClientRef.current.connected) return; // 중복 연결 방지
 
     const client = new Client({
       webSocketFactory: () =>
@@ -70,7 +69,9 @@ const ChatPage = () => {
       onDisconnect: () => {
         console.warn("STOMP 연결이 끊어졌습니다. 1초 후 재연결 시도...");
         setTimeout(() => {
-          stompClientRef.current.activate();
+          if (stompClientRef.current && !stompClientRef.current.connected) {
+            stompClientRef.current.activate();
+          }
         }, 1000);
       },
     });
@@ -120,6 +121,12 @@ const ChatPage = () => {
         destination: "/app/chat/send",
         body: JSON.stringify(message),
       });
+
+      // 메시지 전송 후 바로 화면에 반영
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { content: inputMessage, isMine: true }, // 내가 보낸 메시지는 isMine: true로 설정
+      ]);
 
       setInputMessage("");
     } else {
