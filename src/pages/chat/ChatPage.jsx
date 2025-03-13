@@ -9,7 +9,7 @@ import { deleteChat, getChatDetails } from "../../api/chatroom";
 import { getChat } from "../../api/chat";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRef } from "react";
-import SockJs from "sockjs-client";
+import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { Stomp } from "@stomp/stompjs";
 import ModalComponent from "../../components/chatroom/ModalComponent";
@@ -49,7 +49,7 @@ const ChatPage = () => {
   };
 
   //websockekt 연결
-  const socket = new SockJs(`${process.env.REACT_APP_BASE_URL}/ws-chat`);
+  const socket = new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`);
   const stompClient = Stomp.over(socket);
   const displayMessage = (message) => {
     const messagesDiv = document.getElementById("messages");
