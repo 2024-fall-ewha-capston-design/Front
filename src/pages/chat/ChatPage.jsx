@@ -59,9 +59,11 @@ const ChatPage = () => {
   useEffect(() => {
     if (stompClientRef.current) return; // 이미 연결되어 있으면 실행 X
 
-    const socket = new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`);
-    const client = Stomp.over(socket);
-    stompClientRef.current = client;
+    const stompClient = new Client({
+      webSocketFactory: () =>
+        new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`),
+    });
+    stompClientRef.current = stompClient;
 
     client.connect({ "heart-beat": "10000,10000" }, function (frame) {
       console.log("Connected:" + frame);
