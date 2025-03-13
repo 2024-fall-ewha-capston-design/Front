@@ -10,7 +10,7 @@ import { getChat } from "../../api/chat";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRef } from "react";
 import SockJS from "sockjs-client";
-import { Stomp } from "@stomp/stompjs";
+import { Client } from "@stomp/stompjs";
 import ModalComponent from "../../components/chatroom/ModalComponent";
 import MemberItem from "../../components/chatroom/MemberItem";
 
@@ -48,43 +48,43 @@ const ChatPage = () => {
   };
 
   const displayMessage = (message) => {
-    const messagesDiv = document.getElementById("messages");
-    const messageElement = document.createElement("div");
-    messageElement.textContent = message;
-    messagesDiv.appendChild(messageElement);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    setMessages((prevMessages) => [...prevMessages, { content: message }]);
   };
+
   const stompClientRef = useRef(null);
 
   useEffect(() => {
-    if (stompClientRef.current) return; // 이미 연결되어 있으면 실행 X
+    if (stompClientRef.current) return; // 중복 연결 방지
 
-    const stompClient = new Client({
+    const client = new Client({
       webSocketFactory: () =>
         new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`),
+      connectHeaders: { "accept-version": "1.1" },
+      onConnect: (frame) => {
+        console.log("Connected: " + frame);
+        client.subscribe(`/topic/public/${roomId}`, (message) => {
+          const receivedMessage = JSON.parse(message.body);
+          setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+        });
+      },
+      onDisconnect: () => {
+        console.warn("STOMP 연결이 끊어졌습니다. 1초 후 재연결 시도...");
+        setTimeout(() => {
+          stompClientRef.current.activate();
+        }, 1000);
+      },
     });
-    stompClientRef.current = stompClient;
 
-    client.connect({ "heart-beat": "10000,10000" }, function (frame) {
-      console.log("Connected:" + frame);
-      client.subscribe(`/topic/public/${roomId}`, function (message) {
-        const receivedMessage = JSON.parse(message.body);
-        displayMessage(receivedMessage.content);
-        readChat();
-      });
-    });
-    client.onDisconnect = function () {
-      console.warn("STOMP 연결이 끊어졌습니다. 1초 후 재연결 시도...");
-      setTimeout(() => connectWebSocket(), 1000);
-    };
+    stompClientRef.current = client;
+    client.activate();
 
     return () => {
       if (stompClientRef.current) {
-        stompClientRef.current.disconnect();
+        stompClientRef.current.deactivate();
         stompClientRef.current = null;
       }
     };
-  }, []);
+  }, [roomId]);
 
   /*
   //websockekt 연결
@@ -104,7 +104,11 @@ const ChatPage = () => {
   });
 */
   const sendMessage = () => {
-    if (stompClient && stompClient.connected && inputMessage.trim()) {
+    if (
+      stompClientRef.current &&
+      stompClientRef.current.connected &&
+      inputMessage.trim()
+    ) {
       const message = {
         roomId: roomId,
         type: "CHAT",
@@ -112,7 +116,11 @@ const ChatPage = () => {
         content: inputMessage,
       };
 
-      stompClient.send(`/app/chat/send`, {}, JSON.stringify(message));
+      stompClientRef.current.publish({
+        destination: "/app/chat/send",
+        body: JSON.stringify(message),
+      });
+
       setInputMessage("");
     } else {
       console.warn("STOMP 연결이 안 되어 있거나 메시지가 비어 있습니다.");
@@ -129,10 +137,13 @@ const ChatPage = () => {
       console.error(err);
     }
   };
+
   useEffect(() => {
+    if (!roomId) return;
     readChat();
     readChatRoomDetail();
   }, [roomId]);
+
   return (
     <Layout>
       <Header>
