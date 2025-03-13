@@ -1,3 +1,9 @@
+[build]
+  base = "Front"   # 프론트엔드 디렉토리로 설정
+  command = "npm run build"   # 프론트엔드 빌드 명령어
+  publish = "Front/build"  # 빌드된 결과물을 업로드할 디렉토리
+
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
