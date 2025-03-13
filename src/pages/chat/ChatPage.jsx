@@ -57,7 +57,9 @@ const ChatPage = () => {
 
     const client = new Client({
       webSocketFactory: () =>
-        new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`),
+        new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`, null, {
+          transports: ["websocket"],
+        }),
       connectHeaders: { "accept-version": "1.1" },
       onConnect: (frame) => {
         console.log("Connected: " + frame);
