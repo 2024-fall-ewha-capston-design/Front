@@ -9,7 +9,6 @@ import { deleteChat, getChatDetails } from "../../api/chatroom";
 import { getChat } from "../../api/chat";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRef } from "react";
-import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import ModalComponent from "../../components/chatroom/ModalComponent";
 import MemberItem from "../../components/chatroom/MemberItem";
@@ -57,7 +56,7 @@ const ChatPage = () => {
 
     const client = new Client({
       webSocketFactory: () =>
-        new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`, null, {
+        new WebSocket(`${process.env.REACT_APP_BASE_URL}/ws-chat`, null, {
           transports: ["websocket"],
         }),
       connectHeaders: { "accept-version": "1.1" },
@@ -389,7 +388,6 @@ const MessageBox = styled.div`
   border: 1px solid var(--gray-200);
   background-color: ${(props) => (props.isMine ? "#7b61ff" : "white")};
   color: ${(props) => (props.isMine ? "white" : "black")};
-  max-width: 60%;
   box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
 `;
 const Time = styled.div`
