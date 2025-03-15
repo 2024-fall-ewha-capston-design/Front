@@ -56,7 +56,7 @@ const ChatPage = () => {
 
     const client = new Client({
       webSocketFactory: () =>
-        new WebSocket(`${process.env.REACT_APP_BASE_URL}/ws-chat`, null, {
+        new WebSocket(`${process.env.REACT_APP_CHAT}/ws-chat`, null, {
           transports: ["websocket"],
         }),
       connectHeaders: { "accept-version": "1.1" },
