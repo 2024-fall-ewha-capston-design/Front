@@ -135,14 +135,10 @@ const ChatPage = () => {
         body: JSON.stringify(message),
       });
 
-      // 메시지 전송 후 바로 화면에 반영
-      /* setMessages((prevMessages) => [
+      setMessages((prevMessages) => [
         ...prevMessages,
         { content: inputMessage, isMine: true }, // 내가 보낸 메시지는 isMine: true로 설정
-      ]);*/
-      socket.on("newMessage", (message) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
-      });
+      ]);
 
       setInputMessage("");
     } else {
