@@ -82,10 +82,11 @@ const ChatPage = () => {
         console.log("Connected: " + frame);
         client.subscribe(`/topic/public/${roomId}`, (message) => {
           const receivedMessage = JSON.parse(message.body);
+          console.log("message", receivedMessage);
           setMessages((prevMessages) => [
             ...prevMessages,
             {
-              ...receivedMessage,
+              //...receivedMessage,
               IsMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
             },
           ]);
@@ -100,6 +101,11 @@ const ChatPage = () => {
         }, 1000);
       },
     });
+    useEffect(() => {
+      socket.on("newMessage", (message) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      });
+    }, []);
 
     stompClientRef.current = client;
     client.activate();
