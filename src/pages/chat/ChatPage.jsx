@@ -101,11 +101,6 @@ const ChatPage = () => {
         }, 1000);
       },
     });
-    useEffect(() => {
-      socket.on("newMessage", (message) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
-      });
-    }, []);
 
     stompClientRef.current = client;
     client.activate();
@@ -117,6 +112,11 @@ const ChatPage = () => {
       }
     };
   }, [roomId, participantId]);
+  useEffect(() => {
+    socket.on("newMessage", (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+  }, []);
 
   const sendMessage = () => {
     if (
