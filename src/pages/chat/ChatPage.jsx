@@ -115,7 +115,7 @@ const ChatPage = () => {
         stompClientRef.current = null;
       }
     };
-  }, [roomId, participantId]);
+  }, []);
 
   const sendMessage = () => {
     if (
