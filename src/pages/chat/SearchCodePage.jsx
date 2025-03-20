@@ -2,13 +2,28 @@ import styled from "styled-components";
 import TopBarCommon from "../../components/common/TopBarCommon";
 import { ReactComponent as SearchIcon } from "../../assets/common/search.svg";
 import { useEffect, useState } from "react";
-import { getSearchChatCode, postAnonyChat } from "../../api/chatroom";
+import {
+  getSearchChatCode,
+  postAnonyChat,
+  postNamedChat,
+  getChatRoomPassword,
+} from "../../api/chatroom";
+import ModalComponent from "../../components/chatroom/ModalComponent";
+import { useNavigate } from "react-router-dom";
+import { getChat } from "../../api/chat";
 const SearchCodePage = () => {
   const [code, setCode] = useState("");
   const [count, setCount] = useState("");
   const [roomName, setRoomName] = useState("");
   const [image, setImage] = useState("");
   const [roomId, setRoomId] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSecretChatRoom, setIsSecretChatRoom] = useState("");
+  const [isAnonymousChatRoom, setIsAnonymousChatRoom] = useState("");
+  const [selectedChat, setSelectedChat] = useState("");
+  const [isOwner, setIsOwner] = useState(false);
+  const navigate = useNavigate();
+
   //코드로 채팅방 조회 API 연결
   const readSearchChatCode = async () => {
     try {
@@ -16,6 +31,18 @@ const SearchCodePage = () => {
       setRoomName(response.data.roomName);
       setImage(response.data.chatRoomImgUrl);
       setCount(response.data.participantCount);
+      setIsSecretChatRoom(response.data.isSecretChatRoom);
+      setIsAnonymousChatRoom(response.data.isAnonymousChatRoom);
+      setRoomId(response.data.roomId);
+      return response;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  //실명채티방 입장 API 연결
+  const createNamedChat = async () => {
+    try {
+      const response = await postNamedChat(roomId, isOwner);
       return response;
     } catch (err) {
       console.error(err);
@@ -43,8 +70,32 @@ const SearchCodePage = () => {
           />
           <ChatRoomTitle>{roomName}</ChatRoomTitle>
           <ChatRoomInfo>{count}명 참여중</ChatRoomInfo>
-          <JoinButton>참여하기</JoinButton>
+          <JoinButton
+            onClick={() =>
+              setSelectedChat({ roomName, roomId, isAnonymousChatRoom })
+            }
+          >
+            참여하기
+          </JoinButton>
         </ChatRoomCard>
+      )}
+      {selectedChat && (
+        <ModalComponent
+          roomName={selectedChat.roomName}
+          message="해당 채팅방에 정말로 입장하시겠습니까?"
+          isSecretChatRoom={isSecretChatRoom}
+          roomId={selectedChat.roomId}
+          onConfirm={async () => {
+            if (isAnonymousChatRoom) {
+              navigate(`/setanonyprofile/${roomId}`);
+            } else {
+              await createNamedChat();
+              navigate(`/chatdetail/${roomId}`);
+            }
+            setSelectedChat(null); // 모달 닫기
+          }}
+          onCancel={() => setSelectedChat(null)} // 모달 닫기
+        />
       )}
     </Layout>
   );

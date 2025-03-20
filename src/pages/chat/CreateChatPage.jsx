@@ -172,14 +172,14 @@ const CreateChatPage = () => {
           <Label>별명/실명 여부 *</Label>
           <ButtonGroup>
             <Button
-              selected={isAnonymousChatRoom === false}
+              selected={isAnonymousChatRoom === true}
               onClick={() => setIsAnonymousChatRoom(false)}
             >
               {isAnonymousChatRoom ? <Anony_B /> : <Anony_W />}
               별명
             </Button>
             <Button
-              selected={isAnonymousChatRoom === true}
+              selected={isAnonymousChatRoom === false}
               onClick={() => setIsAnonymousChatRoom(true)}
             >
               {isAnonymousChatRoom ? <Name_W /> : <Name_B />}

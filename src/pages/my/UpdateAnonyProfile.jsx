@@ -29,21 +29,6 @@ const UpdateAnonyProfile = () => {
     }
   };
 
-  //채팅방 신규입장-익명채팅방 API 연결
-  const createAnonyChat = async () => {
-    try {
-      const response = await postAnonyChat(
-        chatRoomId,
-        isOwner,
-        nickname,
-        profileImage
-      );
-      return response;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   //익명 프로필 개별 조회 API 연결
   const readOneAnonyProfile = async () => {
     try {

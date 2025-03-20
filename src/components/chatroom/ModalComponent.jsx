@@ -1,14 +1,51 @@
 import styled from "styled-components";
+import { useState } from "react";
+import { getChatRoomPassword } from "../../api/chatroom";
+const ModalComponent = ({
+  roomName,
+  message,
+  isSecretChatRoom,
+  roomId,
+  onConfirm,
+  onCancel,
+}) => {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-const ModalComponent = ({ roomName, message, onConfirm, onCancel }) => {
+  const handleConfirm = async () => {
+    if (isSecretChatRoom) {
+      try {
+        const response = await getChatRoomPassword(roomId, password);
+        if (response.data == true) {
+          onConfirm();
+        } else {
+          setError("비밀번호가 올바르지 않습니다.");
+        }
+      } catch (err) {
+        setError("비밀번호 확인 중 오류가 발생했습니다.");
+      }
+    } else {
+      onConfirm();
+    }
+  };
+
   return (
     <ModalOverlay>
       <ModalContainer>
         <Logo src="/ewha-logo.png" alt="Ewha Logo" />
         <Title>{roomName}</Title>
         <Subtitle>{message}</Subtitle>
+        {isSecretChatRoom && (
+          <PasswordInput
+            type="password"
+            placeholder="비밀번호를 입력하세요"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        )}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
         <ButtonContainer>
-          <ConfirmButton onClick={onConfirm}>예</ConfirmButton>
+          <ConfirmButton onClick={handleConfirm}>예</ConfirmButton>
           <CancelButton onClick={onCancel}>아니요</CancelButton>
         </ButtonContainer>
       </ModalContainer>
@@ -56,6 +93,20 @@ const Subtitle = styled.p`
   font-size: 14px;
   color: #555;
   margin-bottom: 16px;
+`;
+const PasswordInput = styled.input`
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+`;
+
+const ErrorMessage = styled.p`
+  color: red;
+  font-size: 12px;
+  margin-bottom: 10px;
 `;
 
 const ButtonContainer = styled.div`

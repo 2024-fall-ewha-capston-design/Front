@@ -95,12 +95,12 @@ const FindChatPage = () => {
       </ChatContainer>
       {selectedChat && (
         <ModalComponent
-          roomName="졸프"
+          roomName={selectedChat.roomName}
           message="해당 채팅방에 정말로 입장하시겠습니까?"
           onConfirm={async () => {
             const { isAnonymousChatRoom, roomId } = selectedChat;
             if (isAnonymousChatRoom) {
-              navigate(`/anonyprofile/${roomId}`);
+              navigate(`/setanonyprofile/${roomId}`);
             } else {
               await createNamedChat();
               navigate(`/chatdetail/${roomId}`);

@@ -22,6 +22,7 @@ import Redirect from "./pages/login/Redirect";
 import UpdateProfilePage from "./pages/my/UpdateProfilePage";
 import SearchCodePage from "./pages/chat/SearchCodePage";
 import UpdateAnonyProfile from "./pages/my/UpdateAnonyProfile";
+import SetAnonyProfile from "./pages/my/SetAnonyProfile";
 
 const App = () => {
   return (
@@ -32,10 +33,11 @@ const App = () => {
       <Route path="/home" element={<ChatListPage />} />
       <Route path="/createchat" element={<CreateChatPage />} />
       <Route path="/findchat" element={<FindChatPage />} />
-      <Route path="/keyword" element={<KeywordPage />} />
+      <Route path="/keyword/:roomId" element={<KeywordPage />} />
       <Route path="/notice" element={<NoticePage />} />
       <Route path="/my" element={<MyPage />} />
       <Route path="/updateprofile" element={<UpdateProfilePage />} />
+      <Route path="/setanonyprofile/:roomId" element={<SetAnonyProfile />} />
       <Route
         path="/anonyprofile/:participantId"
         element={<UpdateAnonyProfile />}

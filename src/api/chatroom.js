@@ -127,3 +127,27 @@ export const deleteChatRoom = async (chatRoomId) => {
     throw err;
   }
 };
+
+//채팅방 비밀번호 검사
+export const getChatRoomPassword = async (chatRoomId, password) => {
+  try {
+    const response = await client.get(`/chatRooms/${chatRoomId}/${password}`);
+    return response;
+  } catch (err) {
+    throw err;
+  }
+};
+
+//채팅방 참여 participant 조회
+export const getParticipant = async (chatRoomId, token) => {
+  try {
+    const response = await client.get(`/chatRooms/${chatRoomId}/participants`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    return response;
+  } catch (err) {
+    throw err;
+  }
+};

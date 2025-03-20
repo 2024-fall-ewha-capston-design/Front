@@ -5,7 +5,7 @@ import { ReactComponent as CrownIcon } from "../../assets/chat/crown.svg"; // �
 import { ReactComponent as EditIcon } from "../../assets/chat/edit.svg"; // 프로필 수정 아이콘
 import { ReactComponent as KeywordIcon } from "../../assets/chat/keyword.svg"; // 키워드 관리 아이콘
 import { ReactComponent as ExitIcon } from "../../assets/chat/exit.svg"; // 방 나가기 아이콘
-import { deleteChat, getChatDetails } from "../../api/chatroom";
+import { deleteChat, getChatDetails, getParticipant } from "../../api/chatroom";
 import { getChat } from "../../api/chat";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRef } from "react";
@@ -23,7 +23,9 @@ const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [showParticipants, setShowParticipants] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [participantId, setParticipantId] = useState("");
   const stompClientRef = useRef(null);
+  const token = localStorage.getItem("accessToken");
 
   //채팅방 상세내용 조회 API 연결
   const readChatRoomDetail = async () => {
@@ -32,20 +34,38 @@ const ChatPage = () => {
       setRoomName(response.data.roomName);
       setIdentifier(response.data.identifier);
       setParticipantList(response.data.participantList);
+      console.log(response);
     } catch (err) {
       console.error(err);
     }
   };
-  //채팅내용 조회 API 연결
-  const readChat = async () => {
-    try {
-      const response = await getChat(roomId);
-      setMessages(response.data);
-      return response;
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 1. 먼저 참가자 ID를 불러온 후
+        const participantResponse = await getParticipant(roomId, {
+          headers: {
+            Authorization: `${token}`,
+          },
+        });
+        const participantId = participantResponse.data.participantId;
+        setParticipantId(participantId);
+
+        // 2. 참가자 ID를 기반으로 채팅 내용을 불러옴
+        const chatResponse = await getChat(roomId);
+        setMessages(
+          chatResponse.data.map((msg) => ({
+            ...msg,
+            isMine: msg.senderId === participantId, // 이제는 정확한 비교 가능
+          }))
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [roomId]); // roomId가 변경될 때마다 실행
 
   const displayMessage = (message) => {
     setMessages((prevMessages) => [...prevMessages, { content: message }]);
@@ -57,12 +77,18 @@ const ChatPage = () => {
     const client = new Client({
       webSocketFactory: () =>
         new WebSocket(`${process.env.REACT_APP_CHAT}/ws-chat`),
-      connectHeaders: { "accept-version": "1.1" },
+      connectHeaders: { "accept-version": "1.1", Authorization: `${token}` },
       onConnect: (frame) => {
         console.log("Connected: " + frame);
         client.subscribe(`/topic/public/${roomId}`, (message) => {
           const receivedMessage = JSON.parse(message.body);
-          setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              ...receivedMessage,
+              IsMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
+            },
+          ]);
         });
       },
       onDisconnect: () => {
@@ -84,25 +110,8 @@ const ChatPage = () => {
         stompClientRef.current = null;
       }
     };
-  }, [roomId]);
+  }, [roomId, participantId]);
 
-  /*
-  //websockekt 연결
-  const stompClient = Stomp.over(
-    () => new SockJS(`${process.env.REACT_APP_BASE_URL}/ws-chat`)
-  );
-  stompClient.connect({}, function (frame) {
-    console.log("Connected:" + frame);
-    console.log("STOMP 상태", stompClient.connected);
-    stompClient.subscribe(`/topic/public/${roomId}`, function (message) {
-      const receivedMessage = JSON.parse(message.body); // receivedMessage 정의
-      console.log("Received message:", receivedMessage);
-      displayMessage(receivedMessage.content); // 올바른 필드 사용
-
-      readChat();
-    });
-  });
-*/
   const sendMessage = () => {
     if (
       stompClientRef.current &&
@@ -112,7 +121,7 @@ const ChatPage = () => {
       const message = {
         roomId: roomId,
         type: "CHAT",
-        senderId: 1,
+        senderId: participantId,
         content: inputMessage,
       };
 
@@ -145,9 +154,9 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    if (!roomId) return;
-    readChat();
-    readChatRoomDetail();
+    if (roomId) {
+      readChatRoomDetail();
+    }
   }, [roomId]);
 
   return (
@@ -192,7 +201,13 @@ const ChatPage = () => {
               <EditIcon />
               프로필수정
             </MenuItem>
-            <MenuItem>
+            <MenuItem
+              onClick={() =>
+                navigate(`/keyword/${roomId}`, {
+                  state: { roomId },
+                })
+              }
+            >
               <KeywordIcon />
               키워드관리
             </MenuItem>
@@ -292,6 +307,7 @@ const ParticipantsTitle = styled.h2`
 
 const Participant = styled.div`
   display: flex;
+  flex-direction: column;
   font-size: 14px;
   gap: 10px;
   margin-bottom: 5px;

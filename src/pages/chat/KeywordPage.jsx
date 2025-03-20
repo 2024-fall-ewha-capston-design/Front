@@ -1,46 +1,150 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TopBarCommon from "../../components/common/TopBarCommon";
-import { putKeyword } from "../../api/keyword";
+import {
+  postNegativeKeyword,
+  postPositiveKeyword,
+  getNegativeKeyword,
+  getPositiveKeyword,
+  deleteNegativeKeyword,
+  deletePositiveKeyword,
+} from "../../api/keyword";
+import { getMemberInfo } from "../../api/member";
 import { ReactComponent as Enter } from "../../assets/chat/enter.svg";
-
+import { useLocation } from "react-router-dom";
 const KeywordSettings = () => {
-  const [likeKeywords, setLikeKeywords] = useState([
-    "좋아요",
-    "취업",
-    "동아리",
-    "노트북",
-    "이화여대",
-  ]);
-  const [dislikeKeywords, setDislikeKeywords] = useState([
-    "싫어요",
-    "수강",
-    "프론트엔드",
-    "수강신청",
-    "케이묵",
-  ]);
-  const chatRoomId = 1;
-  const removeKeyword = (keyword, type) => {
-    if (type === "like") {
-      setLikeKeywords(likeKeywords.filter((item) => item !== keyword));
-    } else {
-      setDislikeKeywords(dislikeKeywords.filter((item) => item !== keyword));
-    }
-  };
+  const location = useLocation();
+  const roomId = location.state?.roomId;
+  const [participantId, setParticipantId] = useState("");
+  const [keywordPositive, setKeywordPositive] = useState("");
+  const [keywordNegative, setKeywordNegative] = useState("");
+  const [likeKeywords, setLikeKeywords] = useState([]);
+  const [dislikeKeywords, setDislikeKeywords] = useState([]);
 
-  //키웓 변경 API 연결
-  const updateKeyword = async () => {
+  //사용자 프로필 조회 API 연결
+  useEffect(() => {
+    const fetchMemberInfo = async () => {
+      try {
+        const response = await getMemberInfo();
+        const id = response.data.memberId;
+        setParticipantId(id);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchMemberInfo();
+  }, []); // 처음 한 번 실행
+
+  const removeKeyword = async (keywordId, type) => {
     try {
-      const response = await putKeyword(
-        chatRoomId,
-        likeKeywords,
-        dislikeKeywords
-      );
-      console.log(response);
+      if (type === "like") {
+        await deletePositiveKeyword(participantId, keywordId);
+        setLikeKeywords(
+          likeKeywords.filter((item) => item.keywordId !== keywordId)
+        );
+      } else {
+        await deleteNegativeKeyword(participantId, keywordId);
+        setDislikeKeywords(
+          dislikeKeywords.filter((item) => item.keywordId !== keywordId)
+        );
+      }
     } catch (err) {
       console.error(err);
     }
   };
+
+  //긍정 키워드 조회 API 연결
+  const readPositiveKeyword = async () => {
+    try {
+      const response = await getPositiveKeyword(participantId);
+      setLikeKeywords(
+        response.data.map((item) => ({
+          keywordId: item.keywordId,
+          keyword: item.content,
+        }))
+      );
+      return response;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  //부정 키워드 조회 API 연결
+  const readNegativeKeyword = async () => {
+    try {
+      const response = await getNegativeKeyword(participantId);
+      setDislikeKeywords(
+        response.data.map((item) => ({
+          keywordId: item.keywordId,
+          keyword: item.content,
+        }))
+      );
+      return response;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (participantId) {
+      readPositiveKeyword();
+      readNegativeKeyword();
+    }
+  }, [participantId]);
+  //긍정 키워드 등록 API 연결
+  const createPositiveKeyword = async () => {
+    try {
+      if (keywordPositive.length > 0 && likeKeywords.length < 5) {
+        const response = await postPositiveKeyword(
+          participantId,
+          keywordPositive
+        );
+        setLikeKeywords([
+          ...likeKeywords,
+          {
+            keywordId: response.data.keywordId,
+            keyword: keywordPositive,
+          },
+        ]);
+        setKeywordPositive("");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  //부정 키워드 등록 API 연결
+  const createNegativeKeyword = async () => {
+    try {
+      if (keywordNegative.length > 0 && dislikeKeywords.length < 5) {
+        const response = await postNegativeKeyword(
+          participantId,
+          keywordNegative
+        );
+        setDislikeKeywords([
+          ...dislikeKeywords,
+          { keywordId: response.data.keywordId, keyword: keywordNegative },
+        ]);
+        setKeywordNegative("");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  //Enter키로 등록 처리
+  const handleEnterKey = (e, type) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (type === "like") {
+        createPositiveKeyword();
+      } else {
+        createNegativeKeyword();
+      }
+    }
+  };
+
   return (
     <Layout>
       <TopBarCommon />
@@ -48,13 +152,21 @@ const KeywordSettings = () => {
       <KeywordSection>
         <KeywordLabel>좋아요 키워드 (최대 5개)</KeywordLabel>
         <InputContainer>
-          <KeywordTextarea placeholder="키워드는 최대 5글자" /> <EnterIcon />
+          <KeywordTextarea
+            value={keywordPositive}
+            onChange={(e) => setKeywordPositive(e.target.value)}
+            onKeyDown={(e) => handleEnterKey(e, "like")}
+            placeholder="키워드는 최대 5글자"
+          />
+          <EnterIcon onClick={createPositiveKeyword} />
         </InputContainer>
         <KeywordBox>
-          {likeKeywords.map((keyword, index) => (
-            <Keyword key={index}>
-              {keyword}{" "}
-              <RemoveButton onClick={() => removeKeyword(keyword, "like")}>
+          {likeKeywords.map((item) => (
+            <Keyword key={item.keywordId}>
+              {item.keyword}
+              <RemoveButton
+                onClick={() => removeKeyword(item.keywordId, "like")}
+              >
                 ×
               </RemoveButton>
             </Keyword>
@@ -64,14 +176,21 @@ const KeywordSettings = () => {
       <KeywordSection>
         <KeywordLabel>싫어요 키워드 (최대 5개)</KeywordLabel>
         <InputContainer>
-          <KeywordTextarea placeholder="키워드는 최대 5글자" />
-          <EnterIcon />
+          <KeywordTextarea
+            value={keywordNegative}
+            onChange={(e) => setKeywordNegative(e.target.value)}
+            onKeyDown={(e) => handleEnterKey(e, "dislike")}
+            placeholder="키워드는 최대 5글자"
+          />
+          <EnterIcon onClick={createNegativeKeyword} />
         </InputContainer>
         <KeywordBox>
-          {dislikeKeywords.map((keyword, index) => (
-            <Keyword key={index}>
-              {keyword}{" "}
-              <RemoveButton onClick={() => removeKeyword(keyword, "dislike")}>
+          {dislikeKeywords.map((item) => (
+            <Keyword key={item.keywordId}>
+              {item.keyword}
+              <RemoveButton
+                onClick={() => removeKeyword(item.keywordId, "dislike")}
+              >
                 ×
               </RemoveButton>
             </Keyword>
