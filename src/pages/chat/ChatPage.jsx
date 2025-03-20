@@ -77,7 +77,11 @@ const ChatPage = () => {
     const client = new Client({
       webSocketFactory: () =>
         new WebSocket(`${process.env.REACT_APP_CHAT}/ws-chat`),
-      connectHeaders: { "accept-version": "1.1", Authorization: `${token}` },
+      connectHeaders: {
+        //"accept-version": "1.1",
+        Authorization: `${token}`,
+        "Content-Type": "application/json",
+      },
       onConnect: (frame) => {
         console.log("Connected: " + frame);
         client.subscribe(`/topic/public/${roomId}`, (message) => {
@@ -87,7 +91,7 @@ const ChatPage = () => {
             ...prevMessages,
             {
               //...receivedMessage,
-              IsMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
+              isMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
             },
           ]);
         });
@@ -112,11 +116,6 @@ const ChatPage = () => {
       }
     };
   }, [roomId, participantId]);
-  useEffect(() => {
-    socket.on("newMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-  }, []);
 
   const sendMessage = () => {
     if (
@@ -137,10 +136,13 @@ const ChatPage = () => {
       });
 
       // 메시지 전송 후 바로 화면에 반영
-      setMessages((prevMessages) => [
+      /* setMessages((prevMessages) => [
         ...prevMessages,
         { content: inputMessage, isMine: true }, // 내가 보낸 메시지는 isMine: true로 설정
-      ]);
+      ]);*/
+      socket.on("newMessage", (message) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      });
 
       setInputMessage("");
     } else {

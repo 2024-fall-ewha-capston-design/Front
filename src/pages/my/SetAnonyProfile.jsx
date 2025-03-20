@@ -47,32 +47,9 @@ const UpdateAnonyProfile = () => {
     }
   };
 
-  //익명 프로필 수정 API 연결
-  const updateMemberInfo = async () => {
-    try {
-      const response = await putAnonyProfile(participantId, nickname, profile);
-      console.log("update response", response);
-      navigate(`/chatdetail/${roomId}`);
-      return response;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleSubmit = async () => {
-    try {
-      const response = await createAnonyChat();
-
-      if (response && response.data) {
-        await updateMemberInfo();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
   return (
     <Layout>
-      <TopBarCommon text="프로필 수정" onSubmit={handleSubmit} />
+      <TopBarCommon text="프로필 수정" onSubmit={createAnonyChat} />
       <Title>익명프로필을 등록해주세요</Title>
       <ProfileImage src={profile} alt="프로필 사진" />
       <input type="file" accept="image/*" onChange={handleProfileChange} />
