@@ -34,7 +34,7 @@ const NoticePage = () => {
           <NoticeItem
             key={notice.key}
             keyword={notice.keyword}
-            roomName={notice.chatRoomName}
+            chatRoomName={notice.chatRoomName}
             roomId={notice.chatRoomId}
             chatId={notice.chatId}
           />
@@ -53,6 +53,7 @@ const Layout = styled.div`
 `;
 const NoticeContainer = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 10px;
   background-color: var(--gray-100);
 `;
