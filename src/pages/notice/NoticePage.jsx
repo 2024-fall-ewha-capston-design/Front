@@ -12,6 +12,7 @@ const NoticePage = () => {
     try {
       const response = await getNotification();
       setNoticeList(response.data);
+      console.log("hi", noticeList);
       return response;
     } catch (err) {
       console.error(err);
@@ -52,4 +53,5 @@ const Layout = styled.div`
 `;
 const NoticeContainer = styled.div`
   display: flex;
+  gap: 10px;
 `;

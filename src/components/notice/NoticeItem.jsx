@@ -30,6 +30,7 @@ const Layout = styled.div`
   background-color: var(--white);
   border-radius: 10px;
   background-color: var(--white);
+  cursor: pointer;
 `;
 const TextContainer = styled.div`
   display: flex;
@@ -38,9 +39,9 @@ const TextContainer = styled.div`
 `;
 const Title = styled.span`
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 600;
 `;
 const Message = styled.span`
-  font-size: 11px;
-  color: var(--gray-200);
+  font-size: 12px;
+  color: var(--black);
 `;
