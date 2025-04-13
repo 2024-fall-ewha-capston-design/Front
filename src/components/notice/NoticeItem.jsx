@@ -1,11 +1,15 @@
 import styled from "styled-components";
 
-const NoticeItem = ({ title, message, onClick }) => {
+const NoticeItem = ({ keyword, title, onClick }) => {
   return (
     <Layout onClick={onClick}>
       <TextContainer>
         <Title>{title}</Title>
-        <Message>{message}</Message>
+        <Message>
+          회원님이 설정하신
+          <span style={{ color: "var(--red-pri)" }}>{keyword}</span>에 대한
+          채팅이 왔어요!
+        </Message>
       </TextContainer>
     </Layout>
   );
@@ -18,11 +22,11 @@ const Layout = styled.div`
   flex-direction: row;
   align-items: center;
   padding: 10px;
-  width: 330px;
-  height: 67px;
+  width: 375px;
+  height: 63px;
   background-color: var(--white);
   border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+  background-color: var(--white);
 `;
 const TextContainer = styled.div`
   display: flex;

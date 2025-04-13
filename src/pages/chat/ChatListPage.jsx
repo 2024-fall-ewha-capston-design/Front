@@ -105,8 +105,8 @@ const SearchContainer = styled.div`
   padding: 4px;
   width: 345px;
   background-color: var(--white);
-  border-radius: 10px;
-  box-shadow: 0 0 0 0.1px black; /* 아주 얇은 테두리 효과 */
+  border-radius: 8px;
+  border: 1px solid var(--gray-200);
 `;
 
 const SearchInput = styled.input`

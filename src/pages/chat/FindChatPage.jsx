@@ -64,19 +64,20 @@ const FindChatPage = () => {
 
   return (
     <Layout>
-      <TopBarChat text="채팅" showIcons="true" />
       <NavigationBar />
       <SearchContainer>
-        <SearchIconWrapper>
-          <Search />
-        </SearchIconWrapper>
-        <SearchInput
-          placeholder="채팅방명으로 검색하세요"
-          value={roomName}
-          onChange={handleSearchChange}
-        />
+        <SearchInputContainer>
+          <SearchIconWrapper>
+            <Search />
+          </SearchIconWrapper>
+          <SearchInput
+            placeholder="새로운 오픈채팅방을 찾아보세요"
+            value={roomName}
+            onChange={handleSearchChange}
+          />
+        </SearchInputContainer>
+        <CancelText onClick={() => navigate("/home")}>닫기</CancelText>
       </SearchContainer>
-
       <ChatContainer>
         {filteredChat.map((chatItem) => (
           <ChatItem
@@ -124,17 +125,26 @@ const Layout = styled.div`
   height: 100%;
 `;
 
-const SearchContainer = styled.div`
+const SearchInputContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-top: 52px;
   padding: 4px;
-  width: 345px;
+  width: 304px;
   background-color: var(--white);
-  border-radius: 10px;
-  box-shadow: 0 0 0 0.1px black; /* 아주 얇은 테두리 효과 */
+  border-radius: 8px;
+  border: 1px solid var(--gray-200);
 `;
-
+const SearchContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+`;
+const CancelText = styled.span`
+  font-size: 14px;
+  cursor: pointer;
+`;
 const SearchInput = styled.input`
   flex: 1;
   border: none;

@@ -107,7 +107,6 @@ const Layout = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--purple-sec);
   height: 100vh;
 `;
 
@@ -126,7 +125,7 @@ const SearchInput = styled.input`
   font-size: 14px;
   padding: 10px;
   margin-right: 8px;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--gray-200);
 `;
 
 const SearchButton = styled.button`
@@ -134,13 +133,13 @@ const SearchButton = styled.button`
   height: 45px;
   background: none;
   border-radius: 10px;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
   border: none;
   cursor: pointer;
   padding: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--gray-100);
 `;
 
 const ChatRoomCard = styled.div`

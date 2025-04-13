@@ -11,30 +11,16 @@ import {
 } from "../../api/keyword";
 import { getMemberInfo } from "../../api/member";
 import { ReactComponent as Enter } from "../../assets/chat/enter.svg";
+import { ReactComponent as X } from "../../assets/common/x_blue.svg";
 import { useLocation } from "react-router-dom";
 const KeywordSettings = () => {
   const location = useLocation();
   const roomId = location.state?.roomId;
-  const [participantId, setParticipantId] = useState("");
+  const participantId = location.state?.participantId;
   const [keywordPositive, setKeywordPositive] = useState("");
   const [keywordNegative, setKeywordNegative] = useState("");
   const [likeKeywords, setLikeKeywords] = useState([]);
   const [dislikeKeywords, setDislikeKeywords] = useState([]);
-
-  //사용자 프로필 조회 API 연결
-  useEffect(() => {
-    const fetchMemberInfo = async () => {
-      try {
-        const response = await getMemberInfo();
-        const id = response.data.memberId;
-        setParticipantId(id);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchMemberInfo();
-  }, []); // 처음 한 번 실행
 
   const removeKeyword = async (keywordId, type) => {
     try {
@@ -147,7 +133,7 @@ const KeywordSettings = () => {
 
   return (
     <Layout>
-      <TopBarCommon />
+      <TopBarCommon text="키워드 관리" />
       <SectionTitle>스타트 2024-2</SectionTitle>
       <KeywordSection>
         <KeywordLabel>좋아요 키워드 (최대 5개)</KeywordLabel>
@@ -164,11 +150,7 @@ const KeywordSettings = () => {
           {likeKeywords.map((item) => (
             <Keyword key={item.keywordId}>
               {item.keyword}
-              <RemoveButton
-                onClick={() => removeKeyword(item.keywordId, "like")}
-              >
-                ×
-              </RemoveButton>
+              <X onClick={() => removeKeyword(item.keywordId, "like")}></X>
             </Keyword>
           ))}
         </KeywordBox>
@@ -188,11 +170,7 @@ const KeywordSettings = () => {
           {dislikeKeywords.map((item) => (
             <Keyword key={item.keywordId}>
               {item.keyword}
-              <RemoveButton
-                onClick={() => removeKeyword(item.keywordId, "dislike")}
-              >
-                ×
-              </RemoveButton>
+              <X onClick={() => removeKeyword(item.keywordId, "dislike")}></X>
             </Keyword>
           ))}
         </KeywordBox>
@@ -207,14 +185,13 @@ const Layout = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #f7f7f7;
   height: 100vh;
   padding: 20px;
 `;
 
-const SectionTitle = styled.h2`
-  margin-top: 34px;
-  font-size: 18px;
+const SectionTitle = styled.div`
+  margin-top: 30px;
+  font-size: 16px;
   font-weight: bold;
 `;
 
@@ -223,36 +200,45 @@ const KeywordSection = styled.div`
   background-color: white;
   border-radius: 10px;
   padding: 0px 14px 16px 16px;
-  margin-top: 10px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  margin-bottom: 10px;
 `;
 
 const InputContainer = styled.div`
   display: flex;
   flex-direction: row;
-  position: relative;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 `;
 const KeywordTextarea = styled.textarea`
-  margin-bottom: 10px;
-  width: 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 7px;
+  border-radius: 8px;
+  width: 270px;
   height: 20px;
   border: none;
-  border-bottom: 1px solid var(--black);
+  background-color: var(--gray-100);
   resize: none;
-  outline: none;
 `;
 const EnterIcon = styled(Enter)`
-  postion: absolute;
-  right: 10px;
-  bottom: 5px;
-  width: 20px;
-  height: 20px;
   cursor: pointer;
 `;
-const KeywordLabel = styled.p`
+const EnterBtn = styled.div`
+  background-color: var(--red-pri);
+  padding: 7px;
+  border-radius: 8px;
+`;
+const EnterText = styled.div`
+  font-size: 15px;
+  color: var(--white);
+`;
+const KeywordLabel = styled.div`
   font-size: 14px;
-  font-weight: bold;
   margin-bottom: 10px;
+  margin-left: 5px;
 `;
 
 const KeywordBox = styled.div`
@@ -264,18 +250,10 @@ const KeywordBox = styled.div`
 const Keyword = styled.span`
   display: flex;
   align-items: center;
-  background-color: #e9dcff;
-  color: #7b61ff;
+  color: var(--red-pri);
+  border: 1px solid var(--red-pri);
   padding: 5px 10px;
   border-radius: 15px;
   font-size: 14px;
-`;
-
-const RemoveButton = styled.button`
-  border: none;
-  background: none;
-  font-size: 14px;
-  color: #7b61ff;
-  margin-left: 5px;
-  cursor: pointer;
+  gap: 7px;
 `;

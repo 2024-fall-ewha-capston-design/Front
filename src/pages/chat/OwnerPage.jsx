@@ -4,37 +4,52 @@ import { ReactComponent as Search } from "../../assets/chat/search.svg";
 import { useState } from "react";
 import MemberItem from "../../components/chatroom/MemberItem";
 import { deleteChatRoom, putManager } from "../../api/chatroom";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 const OwnerPage = () => {
-  const [name, setName] = useState();
+  const [name, setName] = useState("");
   const { roomId } = useParams();
   const location = useLocation();
   const participantList = location.state?.participantList || [];
   const roomName = location.state?.roomName;
-  const [newOwnerId, setNewOwnerId] = useState("");
+  const [selectedId, setSelectedId] = useState(""); // 하나만 선택되도록 상태 추가
+  const navigate = useNavigate();
   // 방장 변경 API 연결
   const updateManager = async () => {
     try {
-      const response = await putManager(roomId, newOwnerId);
+      if (!selectedId) {
+        alert("방장을 선택해주세요.");
+        return;
+      }
+      console.log("선택된 방장 ID:", selectedId);
+      const response = await putManager(roomId, selectedId);
       return response;
     } catch (err) {
       console.error(err);
     }
   };
-  //방장권한 채팅방 삭제 API 연결
+
+  // 방장권한 채팅방 삭제 API 연결
   const delChatRoom = async () => {
     try {
       const response = await deleteChatRoom(roomId);
+      navigate("/home");
       return response;
     } catch (err) {
       console.error(err);
     }
   };
+
   // 검색 입력 이벤트 핸들러
   const handleSearchChange = (e) => {
     setName(e.target.value);
   };
+
+  // 멤버 선택 핸들러
+  const handleSelect = (id) => {
+    setSelectedId(id);
+  };
+
   return (
     <Layout>
       <TopBarCommon text="방장 권한" onSubmit={updateManager} />
@@ -53,9 +68,12 @@ const OwnerPage = () => {
         {participantList.map((participant) => (
           <MemberItem
             key={participant.id}
-            newOwnerId={participant.participantId}
+            memberId={participant.participantId} // 고유 ID
             profile={participant.participantImgUrl}
+            isOwner={participant.isOwner}
             name={participant.roomNickname}
+            selectedId={selectedId}
+            onSelect={handleSelect}
           />
         ))}
       </MemberContainer>

@@ -19,7 +19,6 @@ const NavigationBar = () => {
   useEffect(() => {
     const pathToTab = {
       "/": "chatlist",
-      "/findchat": "findchat",
       "/notice": "notice",
       "/my": "editprofile",
     };
@@ -37,11 +36,6 @@ const NavigationBar = () => {
       <IconContainer onClick={() => handleNavigation("chatlist", "/home")}>
         {selected === "chatlist" ? <ChatListB /> : <ChatList />}
         <Text selected={selected === "chatlist"}>채팅목록</Text>
-      </IconContainer>
-
-      <IconContainer onClick={() => handleNavigation("findchat", "/findchat")}>
-        {selected === "findchat" ? <FindChatB /> : <FindChat />}
-        <Text selected={selected === "findchat"}>방 찾기</Text>
       </IconContainer>
 
       <IconContainer onClick={() => handleNavigation("notice", "/notice")}>
@@ -66,9 +60,8 @@ const Layout = styled.div`
   background-color: var(--white);
   width: 375px;
   height: 63px;
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  border-radius: 20px 20px 0px 0px;
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.1);
 `;
 

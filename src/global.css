@@ -10,9 +10,11 @@
   --purple-sec: #faf9ff;
   --purple-thi: #6f068a09;
 
-  --gray-100: #f7f7f7;
-  --gray-200: #c5c5c5;
-  --gray-300: #b3b3b3;
+  --red-pri: #4b5ea8;
+
+  --gray-100: #f1f1f1;
+  --gray-200: #dddddd;
+  --gray-300: #b7b7b7;
 
   background-color: var(--white);
 
@@ -33,12 +35,12 @@
 }
 @media (max-width: 374px) {
   #root {
-    width: 100svw;
+    width: 100svh;
   }
 }
 
-/*
 @font-face {
   font-family: "Presentation";
-  src: url("../public/fonts/NotoSansKR-Medium.ttf") format("truetype");
-}*/
+  src: url("../public/fonts/Inter-VariableFont_opsz,wght.ttf")
+    format("truetype");
+}

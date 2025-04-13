@@ -38,15 +38,20 @@ const MyPage = () => {
   }, []);
   return (
     <Layout>
-      <TopBarChat text="마이페이지" />
+      <TopBarChat
+        text="마이페이지"
+        showSearch={false}
+        showChatCode={false}
+        showAddChat={false}
+      />
       <ProfileSection>
         <SectionTitle>기본 프로필</SectionTitle>
         <ProfileCard>
           <ProfileImageBig />
           <UserNameBig>{nickname}</UserNameBig>
-          <EditProfile>
-            프로필 편집
-            <FaEdit size={12} onClick={() => navigate("/updateprofile")} />
+          <EditProfile onClick={() => navigate("/updateprofile")}>
+            수정
+            <FaEdit size={12} />
           </EditProfile>
         </ProfileCard>
       </ProfileSection>
@@ -60,14 +65,13 @@ const MyPage = () => {
               <RoomName>{profile.roomName}</RoomName>
               <ProfileImage>{profile.participantImgUrl}</ProfileImage>
               <UserName>{profile.roomNickname}</UserName>
-              <EditProfile>
-                프로필 편집
-                <FaEdit
-                  size={12}
-                  onClick={() =>
-                    navigate(`/anonyprofile/${profile.participantId}`)
-                  }
-                />
+              <EditProfile
+                onClick={() =>
+                  navigate(`/anonyprofile/${profile.participantId}`)
+                }
+              >
+                수정
+                <FaEdit size={12} />
               </EditProfile>
             </SmallProfileCard>
           ))}
@@ -88,7 +92,6 @@ const Layout = styled.div`
   align-items: center;
   height: 100svh;
   padding: 20px;
-  background-color: var(--purple-sec);
 `;
 
 const ProfileSection = styled.div`
@@ -105,7 +108,7 @@ const ProfileCard = styled.div`
   background: white;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--gray-200);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -162,10 +165,10 @@ const SmallProfileCard = styled.div`
   background: white;
   padding: 10px;
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: 1px solid var(--gray-200);
 `;
 
 const RoomName = styled.div`

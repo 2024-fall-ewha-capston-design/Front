@@ -18,7 +18,7 @@ export default LoginPage;
 const Layout = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: var(--purple-pri);
+  background-color: var(--red-pri);
   height: 100%;
 `;
 const StyledGoogle = styled(Google)`

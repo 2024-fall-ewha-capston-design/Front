@@ -164,6 +164,11 @@ const ChatPage = () => {
     }
   }, [roomId]);
 
+  //시간 포맷
+  const formatTime = (time) => {
+    const date = new Date(time);
+    return `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+  };
   return (
     <Layout>
       <Header>
@@ -176,18 +181,24 @@ const ChatPage = () => {
 
       {showParticipants && (
         <ParticipantsContainer>
-          <ParticipantsTitle>참여자 목록</ParticipantsTitle>
-          <Participant>
-            {participantList.map((participant) => (
-              <MemberItem
-                key={participant.id}
-                name={participant.roomNickname}
-                profile={participant.participantImgUrl}
-              />
-            ))}
-          </Participant>
+          <RoomName>{roomName}</RoomName>
+          <HLine />
           <RoomCodeContainer>
-            <RoomCodeTitle>채팅방 코드</RoomCodeTitle>
+            <ParticipantsTitle>참여자 목록</ParticipantsTitle>
+            <Participant>
+              {participantList.map((participant) => (
+                <MemberItem
+                  key={participant.id}
+                  name={participant.roomNickname}
+                  profile={participant.participantImgUrl}
+                  memberId={participant.participantId} // 고유 ID
+                  isOwner={participant.isOwner}
+                />
+              ))}
+            </Participant>
+          </RoomCodeContainer>
+          <RoomCodeContainer>
+            <ParticipantsTitle>채팅방 코드</ParticipantsTitle>
             <RoomCode>{identifier}</RoomCode>
           </RoomCodeContainer>
 
@@ -209,7 +220,7 @@ const ChatPage = () => {
             <MenuItem
               onClick={() =>
                 navigate(`/keyword/${roomId}`, {
-                  state: { roomId },
+                  state: { roomId, participantId },
                 })
               }
             >
@@ -232,18 +243,29 @@ const ChatPage = () => {
         </ParticipantsContainer>
       )}
 
-      <Date>2025년 2월 8일(토)</Date>
+      <DateLabel>2025년 2월 8일(토)</DateLabel>
 
       <ChatContainer>
         {messages.map((msg) => (
           <Message key={msg.id} isMine={msg.isMine}>
             {!msg.isMine && (
-              <ProfileImage src="/profile-placeholder.png" alt="profile" />
+              <ProfileImage src={msg.senderImgUrl} alt="profile" />
             )}
             <MessageContent>
-              {!msg.isMine && <Sender>{msg.senderId}</Sender>}
-              <MessageBox isMine={msg.isMine}>{msg.content}</MessageBox>
-              <Time>{msg.createdAt}</Time>
+              {!msg.isMine ? (
+                <SendContainer>
+                  <Sender>{msg.senderNickname}</Sender>
+                  <SendBox>
+                    <MessageBox isMine={msg.isMine}>{msg.content}</MessageBox>
+                    <Time>{formatTime(msg.createdAt)}</Time>
+                  </SendBox>
+                </SendContainer>
+              ) : (
+                <SendBox>
+                  <Time>{formatTime(msg.createdAt)}</Time>
+                  <MessageBox isMine={msg.isMine}>{msg.content}</MessageBox>
+                </SendBox>
+              )}
             </MessageContent>
           </Message>
         ))}
@@ -268,7 +290,7 @@ export default ChatPage;
 const Layout = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100svh;
   background-color: var(--white);
   position: relative;
 `;
@@ -283,7 +305,7 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 16px;
+  font-size: 15px;
 `;
 
 const MenuIcon = styled.div`
@@ -295,21 +317,38 @@ const ParticipantsContainer = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  width: 280px;
-  height: 100svh;
+  width: 250px;
+  height: 98vh;
   background: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-  padding: 10px;
+  padding: 15px 19px 0px 19px;
   display: flex;
   flex-direction: column;
 `;
-
-const ParticipantsTitle = styled.h2`
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 10px;
+const HLine = styled.div`
+  display: flex;
+  padding-top: 12px;
+  border-bottom: 1px solid var(--gray-200);
+`;
+const RoomName = styled.label`
+  font-size: 15px;
 `;
 
+const ParticipantsTitle = styled.div`
+  font-size: 13px;
+  margin-bottom: 10px;
+`;
+const SendBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 6px;
+  justify-content: flex-end;
+`;
+const SendContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 const Participant = styled.div`
   display: flex;
   flex-direction: column;
@@ -321,37 +360,27 @@ const Participant = styled.div`
 const RoomCodeContainer = styled.div`
   display: flex;
   flex-direction: column;
-  position: relative;
-  bottom: 0;
+  margin: 12px 0px 12px 0px;
 `;
-
-const RoomCodeTitle = styled.h3`
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const RoomCode = styled.p`
+const RoomCode = styled.div`
   font-size: 17px;
-  background: var(--gray-100);
-  padding: 5px;
-  border-radius: 5px;
-  width: fit-content;
+  font-weight: 600;
 `;
-
 const BottomMenu = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   position: absolute;
   bottom: 0;
   width: 270px;
+  gap: 14px;
   justify-content: space-around;
   padding: 10px 5px 10px 5px;
-  border-top: 1px solid var(--gray-200);
   background-color: white;
 `;
 
 const MenuItem = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   font-size: 12px;
   color: gray;
@@ -368,7 +397,7 @@ const MenuItem = styled.div`
   }
 `;
 
-const Date = styled.div`
+const DateLabel = styled.div`
   text-align: center;
   font-size: 12px;
   color: gray;
@@ -386,28 +415,31 @@ const ChatContainer = styled.div`
 const Message = styled.div`
   display: flex;
   align-items: flex-start;
+  font-size: 13px;
   justify-content: ${(props) => (props.isMine ? "flex-end" : "flex-start")};
   margin-bottom: 10px;
 `;
 
 const MessageContent = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 `;
 
 const Sender = styled.div`
-  font-size: 12px;
-  color: gray;
+  font-size: 14px;
   margin-bottom: 3px;
 `;
 
 const MessageBox = styled.div`
-  padding: 10px;
-  border-radius: 10px 10px 10px 0px;
+  display: flex;
+  width: fit-content;
+  word-break: break-word;
+  padding: 8px;
   border: 1px solid var(--gray-200);
-  background-color: ${(props) => (props.isMine ? "#7b61ff" : "white")};
+  background-color: ${(props) => (props.isMine ? "var(--red-pri)" : "white")};
   color: ${(props) => (props.isMine ? "white" : "black")};
-  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+  border-radius: ${(props) =>
+    props.isMine ? "10px 10px 0px 10px" : "10px 10px 10px 0px"};
 `;
 const Time = styled.div`
   font-size: 10px;

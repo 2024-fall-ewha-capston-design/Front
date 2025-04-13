@@ -11,6 +11,7 @@ import { ReactComponent as Anony_W } from "../../assets/chat/anony_white.svg";
 import { ReactComponent as Anony_B } from "../../assets/chat/anony_black.svg";
 import { ReactComponent as Name_W } from "../../assets/chat/name_white.svg";
 import { ReactComponent as Name_B } from "../../assets/chat/name_black.svg";
+import BottomButton from "../../components/common/BottomButton";
 
 const CreateChatPage = () => {
   const [roomName, setRoomName] = useState("");
@@ -22,7 +23,7 @@ const CreateChatPage = () => {
   const [chatRoomImgUrl, setChatRoomImgUrl] = useState("");
   const [chatRoomImgFile, setChatRoomImgFile] = useState(null);
   const [roomId, setRoomId] = useState("");
-  const isOwner = false;
+  const isOwner = true;
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -91,7 +92,7 @@ const CreateChatPage = () => {
 
   return (
     <Layout>
-      <TopBarCommon onSubmit={handleCreateChat} />
+      <TopBarCommon text="채팅방 생성" />
       <Container>
         <ItemContainer>
           <Label>채팅방 이름 *</Label>
@@ -101,6 +102,7 @@ const CreateChatPage = () => {
             onChange={(e) => setRoomName(e.target.value)}
           />
         </ItemContainer>
+        <HLine />
         <ItemContainer>
           <Label>공개/비공개 설정 여부 *</Label>
           <ButtonGroup>
@@ -120,6 +122,7 @@ const CreateChatPage = () => {
             </Button>
           </ButtonGroup>
         </ItemContainer>
+        <HLine />
         <ItemContainer>
           <Label>비밀번호 *</Label>
           <PasswordInputGroup>
@@ -168,6 +171,7 @@ const CreateChatPage = () => {
             />
           </PasswordInputGroup>
         </ItemContainer>
+        <HLine />
         <ItemContainer>
           <Label>별명/실명 여부 *</Label>
           <ButtonGroup>
@@ -175,20 +179,21 @@ const CreateChatPage = () => {
               selected={isAnonymousChatRoom === true}
               onClick={() => setIsAnonymousChatRoom(false)}
             >
-              {isAnonymousChatRoom ? <Anony_B /> : <Anony_W />}
+              {isAnonymousChatRoom ? <Anony_W /> : <Anony_B />}
               별명
             </Button>
             <Button
               selected={isAnonymousChatRoom === false}
               onClick={() => setIsAnonymousChatRoom(true)}
             >
-              {isAnonymousChatRoom ? <Name_W /> : <Name_B />}
+              {isAnonymousChatRoom ? <Name_B /> : <Name_W />}
               실명
             </Button>
           </ButtonGroup>
         </ItemContainer>
+        <HLine />
         <ItemContainer>
-          <Label>채팅방 대표 이미지 *</Label>
+          <Label>채팅방 커버 사진 *</Label>
           <ImageUpload onClick={() => fileInputRef.current.click()}>
             {chatRoomImgUrl ? (
               <img
@@ -213,6 +218,7 @@ const CreateChatPage = () => {
           />
         </ItemContainer>
       </Container>
+      <BottomButton text="등록" />
     </Layout>
   );
 };
@@ -221,42 +227,38 @@ export default CreateChatPage;
 
 const Layout = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-flow: column nowrap;
   align-items: center;
-  background-color: var(--purple-sec);
-  height: 100%;
-  padding: 20px;
 `;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  width: 360px;
-  gap: 15px;
-  margin-top: 30px;
+  width: 333px;
+  gap: 18px;
+  margin-top: 45px;
+  margin-bottom: 40px;
 `;
 
 const ItemContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 15px;
-  border-radius: 10px;
-  background-color: var(--white);
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  gap: 5px;
+  gap: 9px;
 `;
 
 const Label = styled.span`
-  font-size: 14px;
-  margin-bottom: 5px;
-  font-weight: bold;
+  font-size: 15px;
 `;
 
 const Textarea = styled.textarea`
-  width: 300px;
-  height: 25px;
+  display: flex;
+  align-items: center;
+  width: 319px;
+  height: 21px;
+  padding: 7px;
   border: none;
-  border-bottom: 1px solid var(--black);
+  border: 0.5px solid var(--gray-300);
+  border-radius: 5px;
   font-size: 14px;
   outline: none;
   resize: none;
@@ -264,21 +266,23 @@ const Textarea = styled.textarea`
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 8px;
 `;
 
 const Button = styled.button`
   display: flex;
   flex-direction: row;
+  width: 80px;
+  height: 35px;
   align-items: center;
-  padding: 8px 17px 8px 14px;
+  justify-content: center;
   border-radius: 5px;
   border: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 13px;
   gap: 5px;
   background-color: ${(props) =>
-    props.selected ? "var(--purple-pri)" : "var(--white)"};
+    props.selected ? "var(--red-pri)" : "var(--white)"};
   color: ${(props) => (props.selected ? "var(--white)" : "var(--black)")};
   border: 0.01rem solid var(--gray-200);
 `;
@@ -289,8 +293,8 @@ const PasswordInputGroup = styled.div`
 `;
 
 const PasswordInput = styled.input`
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   text-align: center;
   font-size: 20px;
   border: 1px solid #ccc;
@@ -311,4 +315,9 @@ const ImageUpload = styled.div`
 
 const HiddenFileInput = styled.input`
   display: none;
+`;
+
+const HLine = styled.div`
+  width: 333px;
+  border: 0.5px solid var(--gray-100);
 `;
