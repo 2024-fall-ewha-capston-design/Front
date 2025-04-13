@@ -7,7 +7,7 @@ import { ReactComponent as KeywordIcon } from "../../assets/chat/keyword.svg"; /
 import { ReactComponent as ExitIcon } from "../../assets/chat/exit.svg"; // 방 나가기 아이콘
 import { deleteChat, getChatDetails, getParticipant } from "../../api/chatroom";
 import { getChat } from "../../api/chat";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import ModalComponent from "../../components/chatroom/ModalComponent";
@@ -16,10 +16,13 @@ import MemberItem from "../../components/chatroom/MemberItem";
 const ChatPage = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const chatIdToScroll = location.state?.chatId;
   const [messages, setMessages] = useState([]);
   const [roomName, setRoomName] = useState("");
   const [identifier, setIdentifier] = useState("");
   const [participantList, setParticipantList] = useState([]);
+
   const [inputMessage, setInputMessage] = useState("");
   const [showParticipants, setShowParticipants] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -56,9 +59,19 @@ const ChatPage = () => {
         setMessages(
           chatResponse.data.map((msg) => ({
             ...msg,
-            isMine: msg.senderId === participantId, // 이제는 정확한 비교 가능
+            isMine: msg.senderId === participantId,
           }))
         );
+        if (chatIdToScroll) {
+          setTimeout(() => {
+            const el = document.getElementById(`chat-${chatIdToScroll}`);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "center" });
+              el.classList.add("highlight");
+              setTimeout(() => el.classList.remove("highlight"), 3000);
+            }
+          }, 300); // DOM 렌더 시간 약간 확보
+        }
       } catch (error) {
         console.error(error);
       }
@@ -90,6 +103,7 @@ const ChatPage = () => {
           setMessages((prevMessages) => [
             ...prevMessages,
             {
+              chatId: receivedMessage.chatId,
               content: receivedMessage.message,
               createdAt: receivedMessage.createdDate,
               isMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
@@ -247,7 +261,7 @@ const ChatPage = () => {
 
       <ChatContainer>
         {messages.map((msg) => (
-          <Message key={msg.id} isMine={msg.isMine}>
+          <Message key={msg.id} chatId={msg.chatId} isMine={msg.isMine}>
             {!msg.isMine && (
               <ProfileImage src={msg.senderImgUrl} alt="profile" />
             )}

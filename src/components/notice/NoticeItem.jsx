@@ -1,10 +1,13 @@
 import styled from "styled-components";
-
-const NoticeItem = ({ keyword, title, onClick }) => {
+import { useNavigate } from "react-router-dom";
+const NoticeItem = ({ keyword, title, roomId, chatId }) => {
+  const navigate = useNavigate();
   return (
-    <Layout onClick={onClick}>
+    <Layout
+      onClick={() => navigate(`/chatdetail/${roomId}`, { state: { chatId } })}
+    >
       <TextContainer>
-        <Title>{title}</Title>
+        <Title>{roomId}</Title>
         <Message>
           회원님이 설정하신
           <span style={{ color: "var(--red-pri)" }}>{keyword}</span>에 대한
