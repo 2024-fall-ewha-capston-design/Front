@@ -33,7 +33,7 @@ const NoticePage = () => {
           <NoticeItem
             key={notice.key}
             keyword={notice.keyword}
-            title={notice.title}
+            roomName={notice.chatRoomName}
             roomId={notice.chatRoomId}
             chatId={notice.chatId}
           />

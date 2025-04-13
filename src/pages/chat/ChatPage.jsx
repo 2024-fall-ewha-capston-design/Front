@@ -60,6 +60,7 @@ const ChatPage = () => {
           chatResponse.data.map((msg) => ({
             ...msg,
             isMine: msg.senderId === participantId,
+            chatId: msg.chatId,
           }))
         );
         if (chatIdToScroll) {
@@ -103,7 +104,6 @@ const ChatPage = () => {
           setMessages((prevMessages) => [
             ...prevMessages,
             {
-              chatId: receivedMessage.chatId,
               content: receivedMessage.message,
               createdAt: receivedMessage.createdDate,
               isMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
