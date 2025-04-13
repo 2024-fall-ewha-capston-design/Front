@@ -23,7 +23,6 @@ export default NoticeItem;
 const Layout = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding: 14px;
   width: 375px;
   background-color: var(--white);

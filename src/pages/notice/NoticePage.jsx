@@ -54,6 +54,7 @@ const Layout = styled.div`
 const NoticeContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   background-color: var(--gray-100);
+  margin-top: 30px;
 `;

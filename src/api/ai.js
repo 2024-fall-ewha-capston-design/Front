@@ -9,3 +9,15 @@ export const getNotification = async () => {
     throw err;
   }
 };
+
+export const deleteNotification = async (notificationId) => {
+  try {
+    const response = await client.delete(
+      `/members/notifications/${notificationId}/read`
+    );
+    console.log(response);
+    return response;
+  } catch (err) {
+    throw err;
+  }
+};
