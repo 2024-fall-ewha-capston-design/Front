@@ -22,13 +22,11 @@ export default NoticeItem;
 
 const Layout = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: 14px;
   width: 375px;
-  height: 63px;
   background-color: var(--white);
-  border-radius: 10px;
   background-color: var(--white);
   cursor: pointer;
 `;
@@ -40,6 +38,7 @@ const TextContainer = styled.div`
 const Title = styled.span`
   font-size: 13px;
   font-weight: 600;
+  color: var(--black);
 `;
 const Message = styled.span`
   font-size: 12px;
