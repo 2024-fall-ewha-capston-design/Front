@@ -29,7 +29,7 @@ const ChatPage = () => {
   const [participantId, setParticipantId] = useState("");
   const stompClientRef = useRef(null);
   const token = localStorage.getItem("accessToken");
-
+  const messagesEndRef = useRef(null);
   //채팅방 상세내용 조회 API 연결
   const readChatRoomDetail = async () => {
     try {
@@ -82,7 +82,10 @@ const ChatPage = () => {
   }, [roomId]); // roomId가 변경될 때마다 실행
 
   const displayMessage = (message) => {
-    setMessages((prevMessages) => [...prevMessages, { content: message }]);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { content: message, isMine: true, createAt: new Date().toISOString() },
+    ]);
   };
 
   useEffect(() => {
@@ -101,6 +104,8 @@ const ChatPage = () => {
         client.subscribe(`/topic/public/${roomId}`, (message) => {
           const receivedMessage = JSON.parse(message.body);
           console.log("message", receivedMessage);
+
+          if (!participantId) return;
           setMessages((prevMessages) => [
             ...prevMessages,
             {
@@ -152,7 +157,11 @@ const ChatPage = () => {
 
       setMessages((prevMessages) => [
         ...prevMessages,
-        { content: inputMessage, isMine: true }, // 내가 보낸 메시지는 isMine: true로 설정
+        {
+          content: inputMessage,
+          isMine: true,
+          createdAt: new Date().toISOString(),
+        }, // 내가 보낸 메시지는 isMine: true로 설정
       ]);
 
       setInputMessage("");
@@ -178,11 +187,26 @@ const ChatPage = () => {
     }
   }, [roomId]);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavoir: "smooth" });
+    }
+  }, [messages]);
   //시간 포맷
   const formatTime = (time) => {
     const date = new Date(time);
     return `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
   };
+  const formatDateLabel = (isoDateStr) => {
+    const date = new Date(isoDateStr);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+    const dayOfWeek = dayNames[date.getDay()];
+    return `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
+  };
+  let lastDate = "";
   return (
     <Layout>
       <Header>
@@ -227,7 +251,11 @@ const ChatPage = () => {
               <CrownIcon />
               방장관리
             </MenuItem>
-            <MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate(`/`);
+              }}
+            >
               <EditIcon />
               프로필수정
             </MenuItem>
@@ -256,33 +284,43 @@ const ChatPage = () => {
           </BottomMenu>
         </ParticipantsContainer>
       )}
-
-      <DateLabel>2025년 2월 8일(토)</DateLabel>
-
       <ChatContainer>
-        {messages.map((msg) => (
-          <Message key={msg.id} chatId={msg.chatId} isMine={msg.isMine}>
-            {!msg.isMine && (
-              <ProfileImage src={msg.senderImgUrl} alt="profile" />
-            )}
-            <MessageContent>
-              {!msg.isMine ? (
-                <SendContainer>
-                  <Sender>{msg.senderNickname}</Sender>
-                  <SendBox>
-                    <MessageBox isMine={msg.isMine}>{msg.content}</MessageBox>
-                    <Time>{formatTime(msg.createdAt)}</Time>
-                  </SendBox>
-                </SendContainer>
-              ) : (
-                <SendBox>
-                  <Time>{formatTime(msg.createdAt)}</Time>
-                  <MessageBox isMine={msg.isMine}>{msg.content}</MessageBox>
-                </SendBox>
+        {messages.map((msg, idx) => {
+          const currentDate = new Date(msg.createdAt).toDateString();
+          const showDateLabel = currentDate !== lastDate;
+          if (showDateLabel) lastDate = currentDate;
+          return (
+            <div key={msg.chatId || idx}>
+              {showDateLabel && (
+                <DateLabel>{formatDateLabel(msg.createdAt)}</DateLabel>
               )}
-            </MessageContent>
-          </Message>
-        ))}
+              <Message isMine={msg.isMine}>
+                {!msg.isMine && (
+                  <ProfileImage src={msg.senderImgUrl} alt="profile" />
+                )}
+                <MessageContent>
+                  {!msg.isMine ? (
+                    <SendContainer>
+                      <Sender>{msg.senderNickname}</Sender>
+                      <SendBox>
+                        <MessageBox isMine={msg.isMine}>
+                          {msg.content}
+                        </MessageBox>
+                        <Time>{formatTime(msg.createdAt)}</Time>
+                      </SendBox>
+                    </SendContainer>
+                  ) : (
+                    <SendBox>
+                      <Time>{formatTime(msg.createdAt)}</Time>
+                      <MessageBox isMine={msg.isMine}>{msg.content}</MessageBox>
+                    </SendBox>
+                  )}
+                </MessageContent>
+              </Message>
+            </div>
+          );
+        })}
+        <div ref={messagesEndRef} />
       </ChatContainer>
 
       <InputContainer>

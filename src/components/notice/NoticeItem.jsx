@@ -1,17 +1,24 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-const NoticeItem = ({ keyword, chatRoomName, roomId, chatId }) => {
+const NoticeItem = ({ keyword, chatRoomName, roomId, chatId, onClick }) => {
   const navigate = useNavigate();
+  const handleClick = async () => {
+    if (onClick) {
+      await onClick();
+    }
+    navigate(`/chatdetail/${roomId}`, { state: { chatId } });
+  };
   return (
-    <Layout
-      onClick={() => navigate(`/chatdetail/${roomId}`, { state: { chatId } })}
-    >
+    <Layout onClick={handleClick}>
       <TextContainer>
         <Title>{chatRoomName}</Title>
         <Message>
           회원님이 설정하신
-          <span style={{ color: "var(--red-pri)" }}>{keyword}</span>에 대한
-          채팅이 왔어요!
+          <span style={{ color: "var(--red-pri)", fontWeight: "bold" }}>
+            {" "}
+            {keyword}
+          </span>
+          에 대한 채팅이 왔어요!
         </Message>
       </TextContainer>
     </Layout>

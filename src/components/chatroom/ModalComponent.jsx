@@ -46,6 +46,7 @@ const ModalComponent = ({
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <ButtonContainer>
           <ConfirmButton onClick={handleConfirm}>예</ConfirmButton>
+          <VLine />
           <CancelButton onClick={onCancel}>아니요</CancelButton>
         </ButtonContainer>
       </ModalContainer>
@@ -73,7 +74,7 @@ const ModalContainer = styled.div`
   padding: 20px;
   border-radius: 10px;
   text-align: center;
-  width: 320px;
+  width: 290px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
@@ -84,7 +85,7 @@ const Logo = styled.img`
 `;
 
 const Title = styled.h2`
-  font-size: 18px;
+  font-size: 25px;
   font-weight: bold;
   margin-bottom: 8px;
 `;
@@ -95,7 +96,7 @@ const Subtitle = styled.p`
   margin-bottom: 16px;
 `;
 const PasswordInput = styled.input`
-  width: 100%;
+  width: 204px;
   padding: 8px;
   margin-bottom: 16px;
   border: 1px solid #ccc;
@@ -112,6 +113,7 @@ const ErrorMessage = styled.p`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
 `;
 
@@ -125,19 +127,20 @@ const Button = styled.button`
 `;
 
 const ConfirmButton = styled(Button)`
-  background: #007bff;
-  color: white;
+  color: var(--red-pri);
+  background-color: var(--white);
   border: none;
-  &:hover {
-    background: #0056b3;
-  }
+  font-size: 17px;
 `;
-
+const VLine = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 25px;
+  border: 1px solid var(--gray-200);
+`;
 const CancelButton = styled(Button)`
-  background: #dc3545;
-  color: white;
+  color: var(--red);
+  background-color: var(--white);
   border: none;
-  &:hover {
-    background: #a71d2a;
-  }
+  font-size: 17px;
 `;

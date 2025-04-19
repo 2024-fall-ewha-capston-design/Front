@@ -92,7 +92,6 @@ const Layout = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--purple-sec);
   height: 100svh;
 `;
 const Title = styled.span`
@@ -126,8 +125,9 @@ const MemberContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
-  margin: 10px 20px 20px 30px;
+  width: 350px;
+  gap: 13px;
+  margin: 20px 20px 20px 30px;
 `;
 const DeleteContainer = styled.div`
   display: flex;
@@ -138,8 +138,9 @@ const DeleteContainer = styled.div`
   bottom: 0;
   background-color: var(--white);
   border-radius: 10px;
-  padding: 14px;
+  padding: 16px;
   cursor: pointer;
+  border: 1px solid var(--gray-200);
 `;
 const Text = styled.span`
   font-size: 21px;

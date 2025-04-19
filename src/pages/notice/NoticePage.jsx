@@ -4,7 +4,7 @@ import TopBarChat from "../../components/common/TopBarChat";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NoticeItem from "../../components/notice/NoticeItem";
-import { getNotification } from "../../api/ai";
+import { getNotification, deleteNotification } from "../../api/ai";
 const NoticePage = () => {
   const [noticeList, setNoticeList] = useState([]);
   const navigate = useNavigate();
@@ -32,11 +32,16 @@ const NoticePage = () => {
       <NoticeContainer>
         {noticeList.map((notice) => (
           <NoticeItem
-            key={notice.key}
+            key={notice.notificationId}
+            notificationId={notice.notificationId}
             keyword={notice.keyword}
             chatRoomName={notice.chatRoomName}
             roomId={notice.chatRoomId}
             chatId={notice.chatId}
+            onClick={async () => {
+              await deleteNotification(notice.notificationId);
+              await readNotification();
+            }}
           />
         ))}
       </NoticeContainer>
@@ -54,7 +59,7 @@ const Layout = styled.div`
 const NoticeContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 3px;
   background-color: var(--gray-100);
-  margin-top: 30px;
+  margin-top: 42px;
 `;

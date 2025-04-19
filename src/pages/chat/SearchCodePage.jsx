@@ -146,13 +146,11 @@ const ChatRoomCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fff;
   padding: 16px;
   border-radius: 12px;
   width: 80%;
   margin-top: 20px;
   text-align: center;
-  background-color: var(--purple-sec);
 `;
 
 const ChatRoomImage = styled.img`

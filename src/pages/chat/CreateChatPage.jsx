@@ -124,7 +124,7 @@ const CreateChatPage = () => {
         </ItemContainer>
         <HLine />
         <ItemContainer>
-          <Label>비밀번호 *</Label>
+          <Label>비밀번호</Label>
           <PasswordInputGroup>
             <PasswordInput
               type="password"
@@ -147,7 +147,7 @@ const CreateChatPage = () => {
               onChange={(e) => handleInputChange(e, setPassword)}
             />
           </PasswordInputGroup>
-          <Label>비밀번호 확인 *</Label>
+          <Label>비밀번호 확인</Label>
           <PasswordInputGroup>
             <PasswordInput
               type="password"
@@ -193,7 +193,7 @@ const CreateChatPage = () => {
         </ItemContainer>
         <HLine />
         <ItemContainer>
-          <Label>채팅방 커버 사진 *</Label>
+          <Label>채팅방 커버 사진</Label>
           <ImageUpload onClick={() => fileInputRef.current.click()}>
             {chatRoomImgUrl ? (
               <img
