@@ -2,6 +2,7 @@ import TopBarCommon from "../../components/common/TopBarCommon";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { putMemberInfo, getMemberInfo } from "../../api/member";
+import { postImage } from "../../api/s3";
 import { useNavigate } from "react-router-dom";
 import BottomButton from "../../components/common/BottomButton";
 import { ReactComponent as Profile } from "../../assets/common/profile.svg";
@@ -27,14 +28,25 @@ const SetProfilePage = () => {
     readMemberInfo();
   }, []);
   //프로필 사진 변경 핸들러
-  const handleProfileChange = (e) => {
+  const handleProfileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onlaoadened = () => {
-        setProfile(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const createImage = await postImage(file.name);
+
+        await fetch(createImage, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        const url = createImage.split("?")[0];
+        console.log("url", url);
+        setProfile(url);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
   //프로필 수정 API 연결

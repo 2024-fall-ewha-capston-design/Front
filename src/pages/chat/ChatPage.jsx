@@ -12,6 +12,7 @@ import { useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import ModalComponent from "../../components/chatroom/ModalComponent";
 import MemberItem from "../../components/chatroom/MemberItem";
+import defaultProfile from "../../assets/chat/defaultprofile.svg";
 
 const ChatPage = () => {
   const { roomId } = useParams();
@@ -296,7 +297,10 @@ const ChatPage = () => {
               )}
               <Message isMine={msg.isMine}>
                 {!msg.isMine && (
-                  <ProfileImage src={msg.senderImgUrl} alt="profile" />
+                  <ProfileImage
+                    src={msg.senderImgUrl || defaultProfile}
+                    alt="profile"
+                  />
                 )}
                 <MessageContent>
                   {!msg.isMine ? (

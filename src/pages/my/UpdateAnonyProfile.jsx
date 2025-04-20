@@ -9,6 +9,7 @@ import TopBarCommon from "../../components/common/TopBarCommon";
 import BottomButton from "../../components/common/BottomButton";
 import { ReactComponent as Profile } from "../../assets/common/profile.svg";
 import { ReactComponent as CameraButton } from "../../assets/common/camerabutton.svg";
+import defaultProfile from "../../assets/chat/defaultprofile.svg";
 const UpdateAnonyProfile = () => {
   const { participantId } = useParams();
   const [profileImage, setProfileImage] = useState(null);
@@ -64,7 +65,11 @@ const UpdateAnonyProfile = () => {
       <Title>스타트 2024-2</Title>
       <SubTitle>에서 사용할 익명 프로필을 수정해주세요</SubTitle>
       <ProfileContainer>
-        {profile ? <ProfileImage src={profile} alt="Profile" /> : <Profile />}
+        {profile ? (
+          <ProfileImage src={profile || defaultProfile} alt="Profile" />
+        ) : (
+          <Profile />
+        )}
         <input
           type="file"
           accept="image/*"

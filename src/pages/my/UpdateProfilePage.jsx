@@ -2,10 +2,12 @@ import TopBarCommon from "../../components/common/TopBarCommon";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { putMemberInfo, getMemberInfo } from "../../api/member";
+import { postImage } from "../../api/s3";
 import { useNavigate } from "react-router-dom";
 import BottomButton from "../../components/common/BottomButton";
 import { ReactComponent as Profile } from "../../assets/common/profile.svg";
 import { ReactComponent as CameraButton } from "../../assets/common/camerabutton.svg";
+import defaultProfile from "../../assets/chat/defaultprofile.svg";
 const UpdateProfilePage = () => {
   const [name, setName] = useState("스타트");
   const [nickname, setNickname] = useState("");
@@ -26,15 +28,24 @@ const UpdateProfilePage = () => {
     readMemberInfo();
   }, []);
   //프로필 사진 변경 핸들러
-  const handleProfileChange = (e) => {
+  const handleProfileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log("reader result:", reader.result);
-        setProfile(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const createImage = await postImage(file.name);
+
+        await fetch(createImage, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        const url = createImage.split("?")[0];
+        setProfile(url);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
   //프로필 수정 API 연결
@@ -53,7 +64,11 @@ const UpdateProfilePage = () => {
       <Title>기본프로필을</Title>
       <SubTitle>수정해주세요</SubTitle>
       <ProfileContainer>
-        {profile ? <ProfileImage src={profile} alt="Profile" /> : <Profile />}
+        {profile ? (
+          <ProfileImage src={profile || defaultProfile} alt="Profile" />
+        ) : (
+          <Profile />
+        )}
         <input
           type="file"
           accept="image/*"

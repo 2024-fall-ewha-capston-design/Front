@@ -5,6 +5,7 @@ import TopBarChat from "../../components/common/TopBarChat";
 import { useNavigate } from "react-router-dom";
 import { getAnonyProfile, getMemberInfo } from "../../api/member";
 import { useEffect, useState } from "react";
+import defaultProfile from "../../assets/chat/defaultprofile.svg";
 
 const MyPage = () => {
   const navigate = useNavigate();

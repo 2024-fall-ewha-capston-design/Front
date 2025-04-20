@@ -6,6 +6,7 @@ import ChatItem from "../../components/chat/ChatItem";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import { getChatList, getSearchChatName } from "../../api/chatroom";
+import defaultRoomImg from "../../assets/chat/defaultcover.svg";
 import _ from "lodash"; // lodash의 debounce 사용
 
 const ChatListPage = () => {
@@ -73,7 +74,7 @@ const ChatListPage = () => {
         {filteredChat.map((chatItem) => (
           <ChatItem
             key={chatItem.roomId}
-            image={chatItem.chatRoomImgUrl}
+            image={chatItem.chatRoomImgUrl || defaultRoomImg}
             anony={chatItem.isAnonymousChatRoom}
             secret={chatItem.isSecretChatRoom}
             title={chatItem.roomName}

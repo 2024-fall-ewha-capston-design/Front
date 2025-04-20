@@ -4,7 +4,7 @@ import { client } from "./api";
 export const postImage = async (fileName) => {
   try {
     const response = await client.post(`/file`, { fileName });
-    return response;
+    return response.data.data;
   } catch (err) {
     throw err;
   }
