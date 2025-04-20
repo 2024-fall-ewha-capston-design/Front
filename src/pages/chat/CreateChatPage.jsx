@@ -218,7 +218,7 @@ const CreateChatPage = () => {
           />
         </ItemContainer>
       </Container>
-      <BottomButton text="등록" />
+      <BottomButton text="등록" onClick={handleCreateChat} />
     </Layout>
   );
 };
