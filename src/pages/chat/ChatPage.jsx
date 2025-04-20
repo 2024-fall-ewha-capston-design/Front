@@ -31,8 +31,6 @@ const ChatPage = () => {
   const stompClientRef = useRef(null);
   const token = localStorage.getItem("accessToken");
   const messagesEndRef = useRef(null);
-  const participantIdRef = useRef(null);
-
   //채팅방 상세내용 조회 API 연결
   const readChatRoomDetail = async () => {
     try {
@@ -56,7 +54,6 @@ const ChatPage = () => {
         });
         const participantId = participantResponse.data.participantId;
         setParticipantId(participantId);
-        participantIdRef.current = participantId;
 
         // 2. 참가자 ID를 기반으로 채팅 내용을 불러옴
         const chatResponse = await getChat(roomId);
@@ -109,13 +106,13 @@ const ChatPage = () => {
           const receivedMessage = JSON.parse(message.body);
           console.log("message", receivedMessage);
 
-          //if (!participantId) return;
+          if (!participantId) return;
           setMessages((prevMessages) => [
             ...prevMessages,
             {
               content: receivedMessage.message,
               createdAt: receivedMessage.createdDate,
-              isMine: receivedMessage.senderId === participantIdRef.current, // 내 메시지 여부 설정
+              isMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
             },
           ]);
         });
