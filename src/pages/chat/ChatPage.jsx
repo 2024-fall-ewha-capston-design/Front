@@ -110,6 +110,7 @@ const ChatPage = () => {
           setMessages((prevMessages) => [
             ...prevMessages,
             {
+              senderNickname: receivedMessage.senderNickname,
               content: receivedMessage.content,
               createdAt: receivedMessage.createdAt,
               isMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
@@ -156,14 +157,14 @@ const ChatPage = () => {
         body: JSON.stringify(message),
       });
 
-      setMessages((prevMessages) => [
+      /*setMessages((prevMessages) => [
         ...prevMessages,
         {
           content: inputMessage,
           isMine: true,
           createdAt: new Date().toISOString(),
         }, // 내가 보낸 메시지는 isMine: true로 설정
-      ]);
+      ]);*/
 
       setInputMessage("");
     } else {
