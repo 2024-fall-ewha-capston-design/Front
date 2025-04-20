@@ -90,7 +90,11 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    if (stompClientRef.current && stompClientRef.current.connected) return; // 중복 연결 방지
+    if (
+      !participantId ||
+      (stompClientRef.current && stompClientRef.current.connected)
+    )
+      return; // 중복 연결 방지
 
     const client = new Client({
       webSocketFactory: () =>
