@@ -110,8 +110,8 @@ const ChatPage = () => {
           setMessages((prevMessages) => [
             ...prevMessages,
             {
-              content: receivedMessage.message,
-              createdAt: receivedMessage.createdDate,
+              content: receivedMessage.content,
+              createdAt: receivedMessage.createdAt,
               isMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
             },
           ]);
