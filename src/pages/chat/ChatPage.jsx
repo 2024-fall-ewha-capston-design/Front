@@ -31,6 +31,8 @@ const ChatPage = () => {
   const stompClientRef = useRef(null);
   const token = localStorage.getItem("accessToken");
   const messagesEndRef = useRef(null);
+  const participantIdRef = useRef(null);
+
   //채팅방 상세내용 조회 API 연결
   const readChatRoomDetail = async () => {
     try {
@@ -107,7 +109,7 @@ const ChatPage = () => {
           console.log("message", receivedMessage);
 
           //if (!participantId) return;
-          if (receivedMessage.senderId === participantId) return;
+          if (receivedMessage.senderId === participantIdRef.current) return;
           setMessages((prevMessages) => [
             ...prevMessages,
             {
@@ -195,6 +197,10 @@ const ChatPage = () => {
       messagesEndRef.current.scrollIntoView({ behavoir: "smooth" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    participantIdRef.current = participantId;
+  }, [participantId]);
   //시간 포맷
   const formatTime = (time) => {
     const date = new Date(time);
