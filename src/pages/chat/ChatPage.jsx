@@ -109,7 +109,7 @@ const ChatPage = () => {
           const receivedMessage = JSON.parse(message.body);
           console.log("message", receivedMessage);
 
-          if (!participantId) return;
+          //if (!participantId) return;
           setMessages((prevMessages) => [
             ...prevMessages,
             {
