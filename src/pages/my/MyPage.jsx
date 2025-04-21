@@ -17,8 +17,8 @@ const MyPage = () => {
     try {
       const response = await getMemberInfo();
       setNickname(response.data.nickname);
-
-      setProfile(response.data.profile);
+      setProfile(response.data.profileImgUrl);
+      console.log(response);
       return response;
     } catch (err) {
       console.error(err);
@@ -28,6 +28,7 @@ const MyPage = () => {
     try {
       const response = await getAnonyProfile();
       setAnonymousProfiles(response.data);
+      console.log(response);
       return response;
     } catch (err) {
       console.error(err);
@@ -48,7 +49,7 @@ const MyPage = () => {
       <ProfileSection>
         <SectionTitle>기본 프로필</SectionTitle>
         <ProfileCard>
-          <ProfileImageBig />
+          <ProfileImageBig src={profile || defaultProfile} alt="chat" />
           <UserNameBig>{nickname}</UserNameBig>
           <EditProfile onClick={() => navigate("/updateprofile")}>
             수정
@@ -64,11 +65,13 @@ const MyPage = () => {
           {anonymousProfiles.map((profile) => (
             <SmallProfileCard key={profile.participantId}>
               <RoomName>{profile.roomName}</RoomName>
-              <ProfileImage>{profile.participantImgUrl}</ProfileImage>
+              <ProfileImage src={profile.participantImgUrl || defaultProfile} />
               <UserName>{profile.roomNickname}</UserName>
               <EditProfile
                 onClick={() =>
-                  navigate(`/anonyprofile/${profile.participantId}`)
+                  navigate(`/anonyprofile/${profile.participantId}`, {
+                    state: { roomName: profile.roomName },
+                  })
                 }
               >
                 수정
@@ -92,11 +95,12 @@ const Layout = styled.div`
   flex-direction: column;
   align-items: center;
   height: 100svh;
-  padding: 20px;
+  overflow-y: auto;
+  padding-bottom: 70px;
 `;
 
 const ProfileSection = styled.div`
-  width: 100%;
+  width: 340px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -105,7 +109,6 @@ const ProfileSection = styled.div`
 `;
 
 const ProfileCard = styled.div`
-  width: 90%;
   background: white;
   padding: 20px;
   border-radius: 12px;
@@ -115,16 +118,19 @@ const ProfileCard = styled.div`
   align-items: center;
 `;
 
-const ProfileImage = styled.div`
+const ProfileImage = styled.img`
   width: ${(props) => (props.small ? "40px" : "80px")};
   height: ${(props) => (props.small ? "40px" : "80px")};
   background: gray;
   border-radius: 50%;
   margin-bottom: 10px;
+  object-fit: cover;
 `;
-const ProfileImageBig = styled(ProfileImage)`
+const ProfileImageBig = styled.img`
   width: 140px;
   height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
 `;
 
 const UserName = styled.div`
@@ -144,8 +150,11 @@ const EditProfile = styled.div`
 `;
 
 const AnonymousProfileSection = styled.div`
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 10px;
+  width: 343px;
 `;
 
 const SectionTitle = styled.h3`
@@ -155,14 +164,15 @@ const SectionTitle = styled.h3`
 `;
 
 const ProfileList = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   overflow-x: auto;
   padding-bottom: 10px;
 `;
 
 const SmallProfileCard = styled.div`
-  width: 100px;
+  width: 86px;
   background: white;
   padding: 10px;
   border-radius: 12px;

@@ -16,6 +16,7 @@ import { useLocation } from "react-router-dom";
 const KeywordSettings = () => {
   const location = useLocation();
   const roomId = location.state?.roomId;
+  const roomName = location.state?.roomName;
   const participantId = location.state?.participantId;
   const [keywordPositive, setKeywordPositive] = useState("");
   const [keywordNegative, setKeywordNegative] = useState("");
@@ -134,7 +135,7 @@ const KeywordSettings = () => {
   return (
     <Layout>
       <TopBarCommon text="키워드 관리" />
-      <SectionTitle>스타트 2024-2</SectionTitle>
+      <SectionTitle>{roomName}</SectionTitle>
       <KeywordSection>
         <KeywordLabel>좋아요 키워드 (최대 5개)</KeywordLabel>
         <InputContainer>
@@ -191,17 +192,17 @@ const Layout = styled.div`
 
 const SectionTitle = styled.div`
   margin-top: 30px;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: bold;
+  margin-bottom: 10px;
 `;
 
 const KeywordSection = styled.div`
-  width: 320px;
+  width: 315px;
   background-color: white;
   border-radius: 10px;
   padding: 0px 14px 16px 16px;
   margin-top: 20px;
-  margin-bottom: 10px;
 `;
 
 const InputContainer = styled.div`

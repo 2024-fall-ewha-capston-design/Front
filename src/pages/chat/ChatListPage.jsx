@@ -81,7 +81,11 @@ const ChatListPage = () => {
             count={chatItem.participantCount}
             message={chatItem.latestChat?.content || ""}
             time={chatItem.createdAt}
-            onClick={() => navigate(`/chatdetail/${chatItem.roomId}`)}
+            onClick={() =>
+              navigate(`/chatdetail/${chatItem.roomId}`, {
+                state: { image: chatItem.chatRoomImgUrl || defaultRoomImg },
+              })
+            }
           />
         ))}
       </ChatContainer>
@@ -96,7 +100,9 @@ const Layout = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: var(--white);
-  height: 100%;
+  height: 100svh;
+  overflow-y: auto;
+  padding-bottom: 70px;
 `;
 
 const SearchContainer = styled.div`

@@ -9,7 +9,7 @@ import TopBarCommon from "../../components/common/TopBarCommon";
 import BottomButton from "../../components/common/BottomButton";
 import { ReactComponent as Profile } from "../../assets/common/profile.svg";
 import { ReactComponent as CameraButton } from "../../assets/common/camerabutton.svg";
-
+import { useLocation } from "react-router-dom";
 const UpdateAnonyProfile = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -20,18 +20,29 @@ const UpdateAnonyProfile = () => {
   const [participantId, setParticipantId] = useState("");
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const roomName = location.state?.roomName;
 
-  const handleProfileChange = (e) => {
+  const handleProfileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadened = () => {
-        setProfile(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const createImage = await postImage(file.name);
+
+        await fetch(createImage, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        const url = createImage.split("?")[0];
+        setProfileImage(url);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
-
   //채팅방 신규입장-익명채팅방 API 연결
   const createAnonyChat = async () => {
     try {
@@ -53,9 +64,9 @@ const UpdateAnonyProfile = () => {
 
   return (
     <Layout>
-      <TopBarCommon text="프로필 수정" />
-      <Title>스타트 2024-2</Title>
-      <SubTitle>에서 사용할 익명 프로필을 수정해주세요</SubTitle>
+      <TopBarCommon text="프로필 등록" />
+      <Title>{roomName}</Title>
+      <SubTitle>에서 사용할 익명 프로필을 등록해주세요</SubTitle>
       <ProfileContainer>
         {profile ? <ProfileImage src={profile} alt="Profile" /> : <Profile />}
         <input
@@ -117,7 +128,6 @@ const ProfileImage = styled.img`
   height: 210px;
   border-radius: 50%;
   object-fit: cover;
-  margin: 50px;
 `;
 const ImageLabel = styled.label`
   display: flex;
@@ -125,9 +135,11 @@ const ImageLabel = styled.label`
 const ProfileContainer = styled.div`
   display: flex;
   position: relative;
-  width: 196px;
-  height: 196px;
+  width: 210px;
+  height: 210px;
   margin: 40px;
+  align-items: center;
+  justify-content: center;
 `;
 const StyledCameraButton = styled(CameraButton)`
   position: absolute;

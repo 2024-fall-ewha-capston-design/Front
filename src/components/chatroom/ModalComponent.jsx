@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { getChatRoomPassword } from "../../api/chatroom";
+import defaultRoomImg from "../../assets/chat/defaultcover.svg";
 const ModalComponent = ({
   roomName,
+  roomImg,
   message,
   isSecretChatRoom,
   roomId,
@@ -32,7 +34,7 @@ const ModalComponent = ({
   return (
     <ModalOverlay>
       <ModalContainer>
-        <Logo src="/ewha-logo.png" alt="Ewha Logo" />
+        <Logo src={roomImg || defaultRoomImg} alt="Ewha Logo" />
         <Title>{roomName}</Title>
         <Subtitle>{message}</Subtitle>
         {isSecretChatRoom && (
@@ -81,18 +83,20 @@ const ModalContainer = styled.div`
 const Logo = styled.img`
   width: 80px;
   height: 80px;
-  margin-bottom: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
 `;
 
-const Title = styled.h2`
-  font-size: 25px;
+const Title = styled.div`
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 8px;
 `;
 
-const Subtitle = styled.p`
+const Subtitle = styled.div`
   font-size: 14px;
-  color: #555;
+  color: var(--black);
   margin-bottom: 16px;
 `;
 const PasswordInput = styled.input`

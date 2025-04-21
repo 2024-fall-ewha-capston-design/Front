@@ -12,6 +12,7 @@ import {
 } from "../../api/chatroom";
 import ModalComponent from "../../components/chatroom/ModalComponent";
 import _ from "lodash"; // lodash의 debounce 사용
+import defaultRoomImg from "../../assets/chat/defaultcover.svg";
 
 const FindChatPage = () => {
   const [chat, setChat] = useState([]);
@@ -41,7 +42,7 @@ const FindChatPage = () => {
     }
   };
 
-  //실명채티방 입장 API 연결
+  //실명채팅방 입장 API 연결
   const createNamedChat = async () => {
     try {
       const response = await postNamedChat(roomId, isOwner);
@@ -82,7 +83,7 @@ const FindChatPage = () => {
         {filteredChat.map((chatItem) => (
           <ChatItem
             key={chatItem.roomId}
-            image={chatItem.chatRoomImgUrl}
+            image={chatItem.chatRoomImgUrl || defaultRoomImg}
             title={chatItem.roomName}
             count={chatItem.participantCount}
             message={chatItem.latestChat?.content || ""}
@@ -99,11 +100,14 @@ const FindChatPage = () => {
           roomName={selectedChat.roomName}
           message="해당 채팅방에 정말로 입장하시겠습니까?"
           onConfirm={async () => {
-            const { isAnonymousChatRoom, roomId } = selectedChat;
+            const { isAnonymousChatRoom, roomId, roomName } = selectedChat;
+            const isOwner = false;
             if (isAnonymousChatRoom) {
-              navigate(`/setanonyprofile/${roomId}`);
+              navigate(`/setanonyprofile/${roomId}`, {
+                state: { roomName: roomName },
+              });
             } else {
-              await createNamedChat();
+              await postNamedChat(roomId, isOwner);
               navigate(`/chatdetail/${roomId}`);
             }
             setSelectedChat(null); // 모달 닫기

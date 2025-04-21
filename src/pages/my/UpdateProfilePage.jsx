@@ -18,7 +18,8 @@ const UpdateProfilePage = () => {
     try {
       const response = await getMemberInfo();
       setNickname(response.data.nickname);
-      setProfile(response.data.profile);
+      setProfile(response.data.participantImgUrl);
+      console.log(response);
       return response;
     } catch (err) {
       console.error(err);

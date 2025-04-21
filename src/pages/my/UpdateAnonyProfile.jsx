@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { Camera } from "lucide-react";
 import { getOneAnonyProfile, putAnonyProfile } from "../../api/member";
 import { postAnonyChat } from "../../api/chatroom";
 import { postImage } from "../../api/s3";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import TopBarCommon from "../../components/common/TopBarCommon";
 import BottomButton from "../../components/common/BottomButton";
 import { ReactComponent as Profile } from "../../assets/common/profile.svg";
@@ -20,15 +21,27 @@ const UpdateAnonyProfile = () => {
   const [profile, setProfile] = useState("");
   const { chatRoomId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const roomName = location.state?.roomName;
 
-  const handleProfileChange = (e) => {
+  const handleProfileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadened = () => {
-        setProfile(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const createImage = await postImage(file.name);
+
+        await fetch(createImage, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        const url = createImage.split("?")[0];
+        setProfile(url);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -62,14 +75,10 @@ const UpdateAnonyProfile = () => {
   return (
     <Layout>
       <TopBarCommon text="프로필 수정" onSubmit={updateMemberInfo} />
-      <Title>스타트 2024-2</Title>
+      <Title>{roomName}</Title>
       <SubTitle>에서 사용할 익명 프로필을 수정해주세요</SubTitle>
       <ProfileContainer>
-        {profile ? (
-          <ProfileImage src={profile || defaultProfile} alt="Profile" />
-        ) : (
-          <Profile />
-        )}
+        <ProfileImage src={profile || defaultProfile} alt="Profile" />
         <input
           type="file"
           accept="image/*"

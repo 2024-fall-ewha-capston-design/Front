@@ -13,7 +13,7 @@ import { Client } from "@stomp/stompjs";
 import ModalComponent from "../../components/chatroom/ModalComponent";
 import MemberItem from "../../components/chatroom/MemberItem";
 import defaultProfile from "../../assets/chat/defaultprofile.svg";
-
+import defaultRoomImg from "../../assets/chat/defaultcover.svg";
 const ChatPage = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const ChatPage = () => {
   const token = localStorage.getItem("accessToken");
   const messagesEndRef = useRef(null);
   const participantIdRef = useRef(null);
-
+  const roomImg = location.state?.image || defaultRoomImg;
   //채팅방 상세내용 조회 API 연결
   const readChatRoomDetail = async () => {
     try {
@@ -116,6 +116,7 @@ const ChatPage = () => {
               senderNickname: receivedMessage.senderNickname,
               content: receivedMessage.content,
               createdAt: receivedMessage.createdAt,
+              senderImgUrl: receivedMessage.senderImgUrl,
               isMine: receivedMessage.senderId === participantId, // 내 메시지 여부 설정
             },
           ]);
@@ -237,7 +238,7 @@ const ChatPage = () => {
                 <MemberItem
                   key={participant.id}
                   name={participant.roomNickname}
-                  profile={participant.participantImgUrl}
+                  profile={participant.participantImgUrl || defaultProfile}
                   memberId={participant.participantId} // 고유 ID
                   isOwner={participant.isOwner}
                 />
@@ -271,7 +272,7 @@ const ChatPage = () => {
             <MenuItem
               onClick={() =>
                 navigate(`/keyword/${roomId}`, {
-                  state: { roomId, participantId },
+                  state: { roomName, roomId, participantId },
                 })
               }
             >
@@ -285,6 +286,7 @@ const ChatPage = () => {
             {showModal && (
               <ModalComponent
                 roomName={roomName}
+                roomImg={roomImg}
                 mesage="정말로 채팅방을 나가시겠습니까?"
                 onConfirm={delChat}
                 onCancel={() => setShowModal(false)}
@@ -546,4 +548,5 @@ const ProfileImage = styled.img`
   border-radius: 15px;
   margin-right: 10px;
   margin-top: 5px;
+  object-fit: cover;
 `;

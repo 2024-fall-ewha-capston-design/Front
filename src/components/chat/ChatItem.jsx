@@ -44,6 +44,7 @@ const Image = styled.img`
   margin-right: 10px;
   border-radius: 20px;
   background-color: var(--gray-200);
+  object-fit: cover;
 `;
 const TextContainer = styled.div`
   display: flex;

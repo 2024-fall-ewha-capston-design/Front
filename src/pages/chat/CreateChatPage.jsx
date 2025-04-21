@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useState, useRef } from "react";
 import TopBarCommon from "../../components/common/TopBarCommon";
 import { postChat, postNamedChat } from "../../api/chatroom";
+import { postImage } from "../../api/s3";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Lock_W } from "../../assets/chat/lock_white.svg";
 import { ReactComponent as Unlock_B } from "../../assets/chat/unlock_black.svg";
@@ -45,14 +46,27 @@ const CreateChatPage = () => {
     setter(combinedValue);
   };
 
-  // 파일 선택 시 state에 파일 객체와 미리보기 URL 저장
-  const handleImageUpload = (e) => {
+  //프로필 사진 변경 핸들러
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-    setChatRoomImgFile(file);
-    setChatRoomImgUrl(URL.createObjectURL(file));
-  };
+    if (file) {
+      try {
+        const createImage = await postImage(file.name);
 
+        await fetch(createImage, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        const url = createImage.split("?")[0];
+        setChatRoomImgUrl(url);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
   const handleCreateChat = async () => {
     if (password !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
@@ -177,14 +191,14 @@ const CreateChatPage = () => {
           <ButtonGroup>
             <Button
               selected={isAnonymousChatRoom === true}
-              onClick={() => setIsAnonymousChatRoom(false)}
+              onClick={() => setIsAnonymousChatRoom(true)}
             >
               {isAnonymousChatRoom ? <Anony_W /> : <Anony_B />}
               별명
             </Button>
             <Button
               selected={isAnonymousChatRoom === false}
-              onClick={() => setIsAnonymousChatRoom(true)}
+              onClick={() => setIsAnonymousChatRoom(false)}
             >
               {isAnonymousChatRoom ? <Name_B /> : <Name_W />}
               실명

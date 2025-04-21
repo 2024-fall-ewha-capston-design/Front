@@ -35,7 +35,8 @@ const Layout = styled.div`
 const Profile = styled.img`
   width: 25px;
   height: 25px;
-  border-radius: 10px;
+  border-radius: 50%;
+  object-fit: cover;
 `;
 const Name = styled.span`
   font-size: 13px;

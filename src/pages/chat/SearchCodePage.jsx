@@ -11,6 +11,7 @@ import {
 import ModalComponent from "../../components/chatroom/ModalComponent";
 import { useNavigate } from "react-router-dom";
 import { getChat } from "../../api/chat";
+import defaultRoomImg from "../../assets/chat/defaultcover.svg";
 const SearchCodePage = () => {
   const [code, setCode] = useState("");
   const [count, setCount] = useState("");
@@ -64,10 +65,7 @@ const SearchCodePage = () => {
 
       {roomName && (
         <ChatRoomCard>
-          <ChatRoomImage
-            src="https://source.unsplash.com/100x100/?flowers"
-            alt="채팅방 이미지"
-          />
+          <ChatRoomImage src={image || defaultRoomImg} alt="채팅방 이미지" />
           <ChatRoomTitle>{roomName}</ChatRoomTitle>
           <ChatRoomInfo>{count}명 참여중</ChatRoomInfo>
           <JoinButton
@@ -156,7 +154,7 @@ const ChatRoomCard = styled.div`
 const ChatRoomImage = styled.img`
   width: 160px;
   height: 160px;
-  border-radius: 16px;
+  border-radius: 50%;
   object-fit: cover;
 `;
 
