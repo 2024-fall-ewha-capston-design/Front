@@ -19,9 +19,13 @@ const KeywordSettings = () => {
   const roomName = location.state?.roomName;
   const participantId = location.state?.participantId;
   const [keywordPositive, setKeywordPositive] = useState("");
+  const [keywordNegative1, setKeywordNegative1] = useState("");
+  const [keywordNegative2, setKeywordNegative2] = useState("");
+  const [keywordNegative3, setKeywordNegative3] = useState("");
   const [keywordNegative, setKeywordNegative] = useState("");
   const [likeKeywords, setLikeKeywords] = useState([]);
   const [dislikeKeywords, setDislikeKeywords] = useState([]);
+  const [penaltyScore, setPenaltyScore] = useState(1);
 
   const removeKeyword = async (keywordId, type) => {
     try {
@@ -65,6 +69,7 @@ const KeywordSettings = () => {
         response.data.map((item) => ({
           keywordId: item.keywordId,
           keyword: item.content,
+          penaltyScore: item.penaltyScore,
         }))
       );
       return response;
@@ -79,6 +84,7 @@ const KeywordSettings = () => {
       readNegativeKeyword();
     }
   }, [participantId]);
+
   //긍정 키워드 등록 API 연결
   const createPositiveKeyword = async () => {
     try {
@@ -102,18 +108,34 @@ const KeywordSettings = () => {
   };
 
   //부정 키워드 등록 API 연결
-  const createNegativeKeyword = async () => {
+  const createNegativeKeyword = async (penaltyScore) => {
     try {
-      if (keywordNegative.length > 0 && dislikeKeywords.length < 5) {
+      const keyword =
+        penaltyScore === 1
+          ? keywordNegative1
+          : penaltyScore === 2
+          ? keywordNegative2
+          : keywordNegative3;
+
+      if (keyword.length > 0 && dislikeKeywords.length < 5) {
         const response = await postNegativeKeyword(
           participantId,
-          keywordNegative
+          keyword,
+          penaltyScore
         );
         setDislikeKeywords([
           ...dislikeKeywords,
-          { keywordId: response.data.keywordId, keyword: keywordNegative },
+          {
+            keywordId: response.data.keywordId,
+            keyword: keyword,
+            penaltyScore: penaltyScore,
+          },
         ]);
-        setKeywordNegative("");
+
+        // 등록 후 해당 텍스트박스 초기화
+        if (penaltyScore === 1) setKeywordNegative1("");
+        else if (penaltyScore === 2) setKeywordNegative2("");
+        else setKeywordNegative3("");
       }
     } catch (err) {
       console.error(err);
@@ -158,20 +180,46 @@ const KeywordSettings = () => {
       </KeywordSection>
       <KeywordSection>
         <KeywordLabel>싫어요 키워드 (최대 5개)</KeywordLabel>
+        <SubLabel>
+          * 벌점에 가중치를 매길 수 있습니다. 3점, 2점, 1점에 해당하는 키워드를
+          등록해주세요
+        </SubLabel>
+
         <InputContainer>
           <KeywordTextarea
-            value={keywordNegative}
-            onChange={(e) => setKeywordNegative(e.target.value)}
-            onKeyDown={(e) => handleEnterKey(e, "dislike")}
-            placeholder="키워드는 최대 5글자"
+            value={keywordNegative1}
+            onChange={(e) => setKeywordNegative1(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && createNegativeKeyword(1)}
+            placeholder="1점 키워드 입력"
           />
-          <EnterIcon onClick={createNegativeKeyword} />
+          <EnterIcon onClick={() => createNegativeKeyword(1)} />
         </InputContainer>
+
+        <InputContainer>
+          <KeywordTextarea
+            value={keywordNegative2}
+            onChange={(e) => setKeywordNegative2(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && createNegativeKeyword(2)}
+            placeholder="2점 키워드 입력"
+          />
+          <EnterIcon onClick={() => createNegativeKeyword(2)} />
+        </InputContainer>
+
+        <InputContainer>
+          <KeywordTextarea
+            value={keywordNegative3}
+            onChange={(e) => setKeywordNegative3(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && createNegativeKeyword(3)}
+            placeholder="3점 키워드 입력"
+          />
+          <EnterIcon onClick={() => createNegativeKeyword(3)} />
+        </InputContainer>
+
         <KeywordBox>
           {dislikeKeywords.map((item) => (
             <Keyword key={item.keywordId}>
-              {item.keyword}
-              <X onClick={() => removeKeyword(item.keywordId, "dislike")}></X>
+              {item.keyword} ({item.penaltyScore}점)
+              <X onClick={() => removeKeyword(item.keywordId, "dislike")} />
             </Keyword>
           ))}
         </KeywordBox>
@@ -198,10 +246,8 @@ const SectionTitle = styled.div`
 `;
 
 const KeywordSection = styled.div`
-  width: 315px;
-  background-color: white;
-  border-radius: 10px;
-  padding: 0px 14px 16px 16px;
+  width: 340px;
+  padding: 0px 14px 16px 14px;
   margin-top: 20px;
 `;
 
@@ -212,49 +258,53 @@ const InputContainer = styled.div`
   justify-content: space-between;
   margin-bottom: 10px;
 `;
+
 const KeywordTextarea = styled.textarea`
   display: flex;
   flex-direction: row;
   justify-content: center;
   padding: 7px;
-  border-radius: 8px;
-  width: 270px;
-  height: 20px;
   border: none;
-  background-color: var(--gray-100);
+  border-bottom: 1px solid var(--gray-300);
+  width: 300px;
+  height: 20px;
   resize: none;
+  &::placeholder {
+    color: var(--gray-300);
+    font-size: 13px;
+  }
 `;
 const EnterIcon = styled(Enter)`
   cursor: pointer;
 `;
-const EnterBtn = styled.div`
-  background-color: var(--red-pri);
-  padding: 7px;
-  border-radius: 8px;
-`;
-const EnterText = styled.div`
-  font-size: 15px;
-  color: var(--white);
-`;
 const KeywordLabel = styled.div`
   font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   margin-left: 5px;
 `;
-
+const SubLabel = styled.div`
+  font-size: 12px;
+  color: var(--gray-300);
+  margin-left: 4px;
+  margin-bottom: 8px;
+`;
 const KeywordBox = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 15px;
 `;
 
 const Keyword = styled.span`
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   color: var(--red-pri);
   border: 1px solid var(--red-pri);
   padding: 5px 10px;
   border-radius: 15px;
   font-size: 14px;
+  line-height: 1.4;
   gap: 7px;
 `;

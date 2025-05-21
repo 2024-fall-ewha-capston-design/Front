@@ -109,10 +109,9 @@ const ProfileSection = styled.div`
 `;
 
 const ProfileCard = styled.div`
-  background: white;
+  background-color: #f8f8f8;
   padding: 20px;
   border-radius: 12px;
-  border: 1px solid var(--gray-200);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -173,13 +172,12 @@ const ProfileList = styled.div`
 
 const SmallProfileCard = styled.div`
   width: 86px;
-  background: white;
+  background-color: #f8f8f8;
   padding: 10px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid var(--gray-200);
 `;
 
 const RoomName = styled.div`

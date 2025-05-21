@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { ReactComponent as Owner } from "../../assets/chat/owner.svg";
 const MemberItem = ({
   memberId,
   profile,
@@ -6,18 +7,20 @@ const MemberItem = ({
   name,
   selectedId,
   onSelect,
+  myId,
 }) => {
   const isChecked = memberId === selectedId;
 
   const handleCheck = () => {
     onSelect(memberId);
   };
-
+  const isMe = memberId === myId;
   return (
     <Layout isChecked={isChecked} onClick={handleCheck}>
       <Profile src={profile} alt="profile" />
       <Name>{name}</Name>
-      {isOwner && <Crown>👑</Crown>}
+      {isOwner && <Owner />}
+      {isMe && <Label>나</Label>}
     </Layout>
   );
 };
@@ -44,4 +47,8 @@ const Name = styled.span`
 const Crown = styled.span`
   font-size: 17px;
   margin-left: 5px;
+`;
+
+const Label = styled.label`
+  color: #ffa100;
 `;

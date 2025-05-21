@@ -5,6 +5,7 @@ import { useState } from "react";
 import MemberItem from "../../components/chatroom/MemberItem";
 import { deleteChatRoom, putManager } from "../../api/chatroom";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import defaultProfile from "../../assets/chat/defaultprofile.svg";
 
 const OwnerPage = () => {
   const [name, setName] = useState("");
@@ -52,7 +53,7 @@ const OwnerPage = () => {
 
   return (
     <Layout>
-      <TopBarCommon text="방장 권한" onSubmit={updateManager} />
+      <TopBarCommon text="방장 권한" />
       <Title>{roomName}</Title>
       <SearchContainer>
         <SearchIconWrapper>
@@ -69,7 +70,7 @@ const OwnerPage = () => {
           <MemberItem
             key={participant.id}
             memberId={participant.participantId} // 고유 ID
-            profile={participant.participantImgUrl}
+            profile={participant.participantImgUrl || defaultProfile}
             isOwner={participant.isOwner}
             name={participant.roomNickname}
             selectedId={selectedId}
@@ -77,6 +78,7 @@ const OwnerPage = () => {
           />
         ))}
       </MemberContainer>
+      <Button onClick={updateManager}>방장 변경</Button>
       <DeleteContainer onClick={delChatRoom}>
         <Text>{roomName} 삭제</Text>
         <SubText>
@@ -147,4 +149,15 @@ const Text = styled.span`
 `;
 const SubText = styled.span`
   font-size: 10px;
+`;
+
+const Button = styled.button`
+  display: flex;
+  width: 80px;
+  background-color: var(--white);
+  color: var(--black);
+  border-radius: 8px;
+  padding: 5px;
+  border: 1px solid var(--gray-200);
+  justify-content: center;
 `;

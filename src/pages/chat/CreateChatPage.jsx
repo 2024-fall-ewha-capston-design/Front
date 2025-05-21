@@ -144,21 +144,25 @@ const CreateChatPage = () => {
               type="password"
               maxLength={1}
               onChange={(e) => handleInputChange(e, setPassword)}
+              disabled={!isSecretChatRoom}
             />
             <PasswordInput
               type="password"
               maxLength={1}
               onChange={(e) => handleInputChange(e, setPassword)}
+              disabled={!isSecretChatRoom}
             />
             <PasswordInput
               type="password"
               maxLength={1}
               onChange={(e) => handleInputChange(e, setPassword)}
+              disabled={!isSecretChatRoom}
             />
             <PasswordInput
               type="password"
               maxLength={1}
               onChange={(e) => handleInputChange(e, setPassword)}
+              disabled={!isSecretChatRoom}
             />
           </PasswordInputGroup>
           <Label>비밀번호 확인</Label>
@@ -167,21 +171,25 @@ const CreateChatPage = () => {
               type="password"
               maxLength={1}
               onChange={(e) => handleInputChange(e, setConfirmPassword)}
+              disabled={!isSecretChatRoom}
             />
             <PasswordInput
               type="password"
               maxLength={1}
               onChange={(e) => handleInputChange(e, setConfirmPassword)}
+              disabled={!isSecretChatRoom}
             />
             <PasswordInput
               type="password"
               maxLength={1}
               onChange={(e) => handleInputChange(e, setConfirmPassword)}
+              disabled={!isSecretChatRoom}
             />
             <PasswordInput
               type="password"
               maxLength={1}
               onChange={(e) => handleInputChange(e, setConfirmPassword)}
+              disabled={!isSecretChatRoom}
             />
           </PasswordInputGroup>
         </ItemContainer>
@@ -313,6 +321,9 @@ const PasswordInput = styled.input`
   font-size: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: ${({ disabled }) => (disabled ? "#f5f5f5" : "white")};
+  color: ${({ disabled }) => (disabled ? "#aaa" : "black")};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "auto")};
 `;
 
 const ImageUpload = styled.div`
