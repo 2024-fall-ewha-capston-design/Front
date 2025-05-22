@@ -250,6 +250,24 @@ const ChatPage = () => {
     if (b.participantId === participantId) return 1;
     return 0;
   });
+  const participantsRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showParticipants &&
+        participantsRef.current &&
+        !participantsRef.current.contains(event.target)
+      ) {
+        setShowParticipants(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showParticipants]);
 
   return (
     <Layout>
@@ -262,7 +280,7 @@ const ChatPage = () => {
       </Header>
 
       {showParticipants && (
-        <ParticipantsContainer>
+        <ParticipantsContainer ref={participantsRef}>
           <RoomName>{roomName}</RoomName>
           <HLine />
           <RoomCodeContainer>
