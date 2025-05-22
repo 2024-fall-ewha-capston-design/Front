@@ -8,7 +8,7 @@ import { getNotification, deleteNotification } from "../../api/ai";
 const NoticePage = () => {
   const [noticeList, setNoticeList] = useState([]);
   const navigate = useNavigate();
-  const readNotification = async () => {
+  /*const readNotification = async () => {
     try {
       const response = await getNotification();
       setNoticeList(response.data);
@@ -17,7 +17,22 @@ const NoticePage = () => {
     } catch (err) {
       console.error(err);
     }
+  };*/
+  const readNotification = async () => {
+    try {
+      const response = await getNotification();
+      const data = response.data;
+
+      // 데이터가 배열이 아닐 경우 빈 배열로 처리
+      const safeData = Array.isArray(data) ? data : [];
+
+      setNoticeList(safeData);
+    } catch (err) {
+      console.error("알림 데이터를 불러오는 데 실패했습니다:", err);
+      setNoticeList([]); // 에러 시에도 빈 배열로 초기화
+    }
   };
+
   useEffect(() => {
     readNotification();
   }, []);
