@@ -62,7 +62,7 @@ const SetProfilePage = () => {
   };
   return (
     <Layout>
-      <TopBarCommon text="프로필 수정" />
+      <TopBarCommon text="프로필 등록" />
       <Title>기본 프로필</Title>
       <SubTitle>을 등록해주세요</SubTitle>
       <ProfileContainer>
@@ -125,7 +125,6 @@ const ProfileImage = styled.img`
   height: 210px;
   border-radius: 50%;
   object-fit: cover;
-  margin: 50px;
 `;
 const ImageLabel = styled.label`
   display: flex;
@@ -133,9 +132,11 @@ const ImageLabel = styled.label`
 const ProfileContainer = styled.div`
   display: flex;
   position: relative;
-  width: 196px;
-  height: 196px;
+  width: 210px;
+  height: 210px;
   margin: 40px;
+  align-items: center;
+  justify-content: center;
 `;
 const StyledCameraButton = styled(CameraButton)`
   position: absolute;
