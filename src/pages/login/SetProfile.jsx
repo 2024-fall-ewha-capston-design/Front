@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import BottomButton from "../../components/common/BottomButton";
 import { ReactComponent as Profile } from "../../assets/common/profile.svg";
 import { ReactComponent as CameraButton } from "../../assets/common/camerabutton.svg";
+import defaultProfile from "../../assets/chat/defaultprofile.svg";
 
 const SetProfilePage = () => {
   const [name, setName] = useState("스타트");
