@@ -62,10 +62,10 @@ const SetProfilePage = () => {
   return (
     <Layout>
       <TopBarCommon text="프로필 수정" />
-      <Title>스타트 2024-2</Title>
-      <SubTitle>에서 사용할 익명 프로필을 등록해주세요</SubTitle>
+      <Title>기본 프로필</Title>
+      <SubTitle>을 등록해주세요</SubTitle>
       <ProfileContainer>
-        {profile ? <ProfileImage src={profile} alt="Profile" /> : <Profile />}
+        <ProfileImage src={profile || defaultProfile} alt="Profile" />
         <input
           type="file"
           accept="image/*"
