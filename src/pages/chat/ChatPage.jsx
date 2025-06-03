@@ -317,7 +317,9 @@ const ChatPage = () => {
             <MenuItem
               onClick={() => {
                 if (isAnonymousChatRoom === true) {
-                  navigate(`/anonyprofile/${participantId}`);
+                  navigate(`/anonyprofile/${participantId}`, {
+                    state: { roomName, roomId, participantId },
+                  });
                 } else {
                   navigate(`/updateprofile`);
                 }
@@ -344,7 +346,7 @@ const ChatPage = () => {
               <ModalComponent
                 roomName={roomName}
                 roomImg={roomImg}
-                mesage="정말로 채팅방을 나가시겠습니까?"
+                message="정말로 채팅방을 나가시겠습니까?"
                 onConfirm={delChat}
                 onCancel={() => setShowModal(false)}
               />

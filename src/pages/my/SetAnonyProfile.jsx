@@ -10,6 +10,8 @@ import BottomButton from "../../components/common/BottomButton";
 import { ReactComponent as Profile } from "../../assets/common/profile.svg";
 import { ReactComponent as CameraButton } from "../../assets/common/camerabutton.svg";
 import { useLocation } from "react-router-dom";
+import defaultProfile from "../../assets/chat/defaultprofile.svg";
+
 const UpdateAnonyProfile = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -22,6 +24,7 @@ const UpdateAnonyProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const roomName = location.state?.roomName;
+  console.log("roomName", roomName);
 
   const handleProfileChange = async (e) => {
     const file = e.target.files[0];
@@ -37,6 +40,7 @@ const UpdateAnonyProfile = () => {
           },
         });
         const url = createImage.split("?")[0];
+        setProfile(url);
         setProfileImage(url);
       } catch (err) {
         console.error(err);
@@ -68,7 +72,7 @@ const UpdateAnonyProfile = () => {
       <Title>{roomName}</Title>
       <SubTitle>에서 사용할 익명 프로필을 등록해주세요</SubTitle>
       <ProfileContainer>
-        {profile ? <ProfileImage src={profile} alt="Profile" /> : <Profile />}
+        <ProfileImage src={profile || defaultProfile} alt="Profile" />
         <input
           type="file"
           accept="image/*"

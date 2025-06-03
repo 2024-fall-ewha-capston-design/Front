@@ -110,8 +110,8 @@ const SubTitle = styled.span`
 const ProfileContainer = styled.div`
   display: flex;
   position: relative;
-  width: 196px;
-  height: 196px;
+  width: 210px;
+  height: 210px;
   margin: 40px;
 `;
 const InputContainer = styled.div`
@@ -133,8 +133,8 @@ const NameText = styled.textarea`
   outline: none;
 `;
 const ProfileImage = styled.img`
-  width: 195px;
-  height: 195px;
+  width: 210px;
+  height: 210px;
   border-radius: 50%;
   object-fit: cover;
 `;
