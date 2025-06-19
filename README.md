@@ -12,18 +12,26 @@
 ### 2. 라이브러리 설치
 <pre>npm install</pre>
 
-### 3. 실행
-<pre>npm start</pre>
-기본 포트: http://localhost:3000
-
-### 4. 폴더 최상단에 .env 파일 생성 후
-<pre>REACT_APP_BASE_URL=                  #백엔드 API 주소
+### 3. 폴더 최상단에 .env 파일 생성 후
+<pre>REACT_APP_BASE_URL=                       #백엔드 API 주소
 REACT_APP_GOOGLE_AUTH_CLIENT_ID=          #구글 Oauth 클라이언트 ID
 REACT_APP_GOOGLE_AUTH_REDIRECT_URI=       #구글 OAuth Redirection URI
-REACT_APP_CHAT=                           #채팅 관련 주
-  
+REACT_APP_CHAT=                           #채팅 관련 주소
+    
 해당 내용들 입력
-*키 값들은 시제품 제출물에 넣어놨습니다!</pre>
+*키 값들은 시제품 제출물 readme에 넣어놨습니다!</pre>
+
+### 4. 실행
+<pre>npm start</pre>
+기본 포트: http://localhost:3000
+* 현재 구글 로그인 redirect_uri가 배포 사이트 링크로 설정되어있어 실제 로그인 후 동작은 배포주소에서 가능합니다.
+
+### 테스트 계정(구글 로그인 계정)
+아이디: 2025happycoder@gmail.com
+비밀번호: happycoder@
+
+<br>
+<br>
 
 ## 주요 패키지
 | 패키지명                           | 설명                      |
