@@ -9,7 +9,6 @@ import { ReactComponent as Profile } from "../../assets/common/profile.svg";
 import { ReactComponent as CameraButton } from "../../assets/common/camerabutton.svg";
 import defaultProfile from "../../assets/chat/defaultprofile.svg";
 const UpdateProfilePage = () => {
-  const [name, setName] = useState("스타트");
   const [nickname, setNickname] = useState("");
   const [profile, setProfile] = useState("");
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ const UpdateProfilePage = () => {
     try {
       const response = await getMemberInfo();
       setNickname(response.data.nickname);
-      setProfile(response.data.participantImgUrl);
+      setProfile(response.data.profileImgUrl);
       console.log(response);
       return response;
     } catch (err) {
@@ -65,11 +64,7 @@ const UpdateProfilePage = () => {
       <Title>기본프로필을</Title>
       <SubTitle>수정해주세요</SubTitle>
       <ProfileContainer>
-        {profile ? (
-          <ProfileImage src={profile || defaultProfile} alt="Profile" />
-        ) : (
-          <Profile />
-        )}
+        <ProfileImage src={profile || defaultProfile} alt="Profile" />
         <input
           type="file"
           accept="image/*"
@@ -115,8 +110,8 @@ const SubTitle = styled.span`
 const ProfileContainer = styled.div`
   display: flex;
   position: relative;
-  width: 196px;
-  height: 196px;
+  width: 210px;
+  height: 210px;
   margin: 40px;
 `;
 const InputContainer = styled.div`
@@ -138,8 +133,8 @@ const NameText = styled.textarea`
   outline: none;
 `;
 const ProfileImage = styled.img`
-  width: 195px;
-  height: 195px;
+  width: 210px;
+  height: 210px;
   border-radius: 50%;
   object-fit: cover;
 `;

@@ -70,7 +70,12 @@ const SearchCodePage = () => {
           <ChatRoomInfo>{count}명 참여중</ChatRoomInfo>
           <JoinButton
             onClick={() =>
-              setSelectedChat({ roomName, roomId, isAnonymousChatRoom })
+              setSelectedChat({
+                image,
+                roomName,
+                roomId,
+                isAnonymousChatRoom,
+              })
             }
           >
             참여하기
@@ -79,13 +84,16 @@ const SearchCodePage = () => {
       )}
       {selectedChat && (
         <ModalComponent
+          roomImg={selectedChat.image}
           roomName={selectedChat.roomName}
           message="해당 채팅방에 정말로 입장하시겠습니까?"
           isSecretChatRoom={isSecretChatRoom}
           roomId={selectedChat.roomId}
           onConfirm={async () => {
             if (isAnonymousChatRoom) {
-              navigate(`/setanonyprofile/${roomId}`);
+              navigate(`/setanonyprofile/${roomId}`, {
+                state: { roomName },
+              });
             } else {
               await createNamedChat();
               navigate(`/chatdetail/${roomId}`);

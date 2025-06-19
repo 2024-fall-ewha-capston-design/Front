@@ -83,7 +83,10 @@ const ChatListPage = () => {
             time={chatItem.createdAt}
             onClick={() =>
               navigate(`/chatdetail/${chatItem.roomId}`, {
-                state: { image: chatItem.chatRoomImgUrl || defaultRoomImg },
+                state: {
+                  image: chatItem.chatRoomImgUrl || defaultRoomImg,
+                  isAnonymousChatRoom: chatItem.isAnonymousChatRoom,
+                },
               })
             }
           />

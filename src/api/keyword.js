@@ -14,11 +14,15 @@ export const postPositiveKeyword = async (participantId, keywordPositive) => {
 };
 
 //부정 키워드 수정(추가)
-export const postNegativeKeyword = async (participantId, keywordNegative) => {
+export const postNegativeKeyword = async (
+  participantId,
+  keywordNegative,
+  penaltyScore
+) => {
   try {
     const response = await client.post(
       `/participants/${participantId}/negative-keywords`,
-      { keyword: keywordNegative }
+      { keyword: keywordNegative, penaltyScore: penaltyScore }
     );
     return response;
   } catch (err) {
@@ -39,7 +43,7 @@ export const getPositiveKeyword = async (participantId) => {
   }
 };
 
-//부부정 키워드 목록 조회
+//부정 키워드 목록 조회
 export const getNegativeKeyword = async (participantId) => {
   try {
     const response = await client.get(

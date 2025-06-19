@@ -23,6 +23,7 @@ const UpdateAnonyProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const roomName = location.state?.roomName;
+  console.log("roomName", roomName);
 
   const handleProfileChange = async (e) => {
     const file = e.target.files[0];
@@ -51,6 +52,7 @@ const UpdateAnonyProfile = () => {
       const response = await getOneAnonyProfile(participantId);
       setEmail(response.data.email);
       setNickname(response.data.roomNickname);
+      setProfile(response.data.participantImgUrl);
       console.log(response);
     } catch (err) {
       console.error(err);
@@ -145,8 +147,8 @@ const ImageLabel = styled.label`
 const ProfileContainer = styled.div`
   display: flex;
   position: relative;
-  width: 196px;
-  height: 196px;
+  width: 210px;
+  height: 210px;
   margin: 40px;
 `;
 const StyledCameraButton = styled(CameraButton)`

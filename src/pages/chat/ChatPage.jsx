@@ -19,20 +19,22 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const chatIdToScroll = location.state?.chatId;
+  const isAnonymousChatRoom = location.state?.isAnonymousChatRoom ?? false;
   const [messages, setMessages] = useState([]);
   const [roomName, setRoomName] = useState("");
   const [identifier, setIdentifier] = useState("");
   const [participantList, setParticipantList] = useState([]);
-
   const [inputMessage, setInputMessage] = useState("");
   const [showParticipants, setShowParticipants] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [participantId, setParticipantId] = useState("");
+  const [offenderIds, setOffenderIds] = useState([]);
   const stompClientRef = useRef(null);
   const token = localStorage.getItem("accessToken");
   const messagesEndRef = useRef(null);
   const participantIdRef = useRef(null);
   const roomImg = location.state?.image || defaultRoomImg;
+  console.log("🔍 isAnonymousChatRoom:", isAnonymousChatRoom);
   //채팅방 상세내용 조회 API 연결
   const readChatRoomDetail = async () => {
     try {
@@ -40,6 +42,7 @@ const ChatPage = () => {
       setRoomName(response.data.roomName);
       setIdentifier(response.data.identifier);
       setParticipantList(response.data.participantList);
+
       console.log(response);
     } catch (err) {
       console.error(err);
@@ -92,6 +95,7 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
+    if (!participantId) return;
     if (stompClientRef.current && stompClientRef.current.connected) return; // 중복 연결 방지
 
     const client = new Client({
@@ -104,6 +108,8 @@ const ChatPage = () => {
       },
       onConnect: (frame) => {
         console.log("Connected: " + frame);
+
+        //채팅 구독
         client.subscribe(`/topic/public/${roomId}`, (message) => {
           const receivedMessage = JSON.parse(message.body);
           console.log("message", receivedMessage);
@@ -113,6 +119,7 @@ const ChatPage = () => {
           setMessages((prevMessages) => [
             ...prevMessages,
             {
+              senderId: receivedMessage.senderId,
               senderNickname: receivedMessage.senderNickname,
               content: receivedMessage.content,
               createdAt: receivedMessage.createdAt,
@@ -121,7 +128,26 @@ const ChatPage = () => {
             },
           ]);
         });
+
+        //요주의 인물 구독 추가
+        console.log(
+          "요주의 인물 구독 경로:",
+          `/topic/penalty/${participantId}`
+        );
+
+        client.subscribe(`/topic/penalty/${participantId}`, (message) => {
+          console.log("요주의 인물 메시지 수신");
+          try {
+            const data = JSON.parse(message.body);
+            const ids = data.map((item) => item.offenderId);
+            console.log("요주의 인물 목록:", ids);
+            setOffenderIds(ids);
+          } catch (error) {
+            console.error("요주의 인물 구독 메시지 처리 중 오류:", error);
+          }
+        });
       },
+
       onDisconnect: () => {
         console.warn("STOMP 연결이 끊어졌습니다. 1초 후 재연결 시도...");
         setTimeout(() => {
@@ -141,7 +167,7 @@ const ChatPage = () => {
         stompClientRef.current = null;
       }
     };
-  }, []);
+  }, [participantId]);
 
   const sendMessage = () => {
     if (
@@ -217,6 +243,32 @@ const ChatPage = () => {
     return `${year}년 ${month}월 ${day}일 (${dayOfWeek})`;
   };
   let lastDate = "";
+
+  // myId는 participantId로 받아온 현재 로그인한 사람의 ID
+  const sortedParticipants = [...participantList].sort((a, b) => {
+    if (a.participantId === participantId) return -1; // 나 먼저
+    if (b.participantId === participantId) return 1;
+    return 0;
+  });
+  const participantsRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showParticipants &&
+        participantsRef.current &&
+        !participantsRef.current.contains(event.target)
+      ) {
+        setShowParticipants(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showParticipants]);
+
   return (
     <Layout>
       <Header>
@@ -228,19 +280,20 @@ const ChatPage = () => {
       </Header>
 
       {showParticipants && (
-        <ParticipantsContainer>
+        <ParticipantsContainer ref={participantsRef}>
           <RoomName>{roomName}</RoomName>
           <HLine />
           <RoomCodeContainer>
             <ParticipantsTitle>참여자 목록</ParticipantsTitle>
             <Participant>
-              {participantList.map((participant) => (
+              {sortedParticipants.map((participant) => (
                 <MemberItem
                   key={participant.id}
                   name={participant.roomNickname}
                   profile={participant.participantImgUrl || defaultProfile}
                   memberId={participant.participantId} // 고유 ID
                   isOwner={participant.isOwner}
+                  myId={participantId}
                 />
               ))}
             </Participant>
@@ -263,7 +316,13 @@ const ChatPage = () => {
             </MenuItem>
             <MenuItem
               onClick={() => {
-                navigate(`/`);
+                if (isAnonymousChatRoom === true) {
+                  navigate(`/anonyprofile/${participantId}`, {
+                    state: { roomName, roomId, participantId },
+                  });
+                } else {
+                  navigate(`/updateprofile`);
+                }
               }}
             >
               <EditIcon />
@@ -287,7 +346,7 @@ const ChatPage = () => {
               <ModalComponent
                 roomName={roomName}
                 roomImg={roomImg}
-                mesage="정말로 채팅방을 나가시겠습니까?"
+                message="정말로 채팅방을 나가시겠습니까?"
                 onConfirm={delChat}
                 onCancel={() => setShowModal(false)}
               />
@@ -315,9 +374,14 @@ const ChatPage = () => {
                 <MessageContent>
                   {!msg.isMine ? (
                     <SendContainer>
-                      <Sender>{msg.senderNickname}</Sender>
+                      <Sender offender={offenderIds.includes(msg.senderId)}>
+                        {msg.senderNickname}
+                      </Sender>
                       <SendBox>
-                        <MessageBox isMine={msg.isMine}>
+                        <MessageBox
+                          isMine={msg.isMine}
+                          offender={offenderIds.includes(msg.senderId)}
+                        >
                           {msg.content}
                         </MessageBox>
                         <Time>{formatTime(msg.createdAt)}</Time>
@@ -494,6 +558,7 @@ const MessageContent = styled.div`
 const Sender = styled.div`
   font-size: 14px;
   margin-bottom: 3px;
+  color: ${({ offender }) => (offender ? "#FFA100" : "#000000")};
 `;
 
 const MessageBox = styled.div`

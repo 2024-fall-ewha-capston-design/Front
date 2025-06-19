@@ -1,26 +1,31 @@
 import styled from "styled-components";
 import { ReactComponent as Google } from "../../assets/login/google.svg";
-import { useNavigate } from "react-router-dom";
+import { ReactComponent as Logo } from "../../assets/login/logo.svg";
+import { useEffect } from "react";
 
 const LoginPage = () => {
-  const handleGoogleLogin = () => {
-    window.location.href = `
-    https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_GOOGLE_AUTH_REDIRECT_URI}&response_type=code&scope=email+profile`;
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_GOOGLE_AUTH_REDIRECT_URI}&response_type=code&scope=email+profile`;
+    }, 4000); // 2초 후 리디렉션
+
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+  }, []);
+
   return (
     <Layout>
-      <StyledGoogle onClick={handleGoogleLogin} />
+      <Logo />
     </Layout>
   );
 };
+
 export default LoginPage;
 
 const Layout = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: var(--red-pri);
-  height: 100%;
-`;
-const StyledGoogle = styled(Google)`
-  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
+  height: 100vh;
 `;

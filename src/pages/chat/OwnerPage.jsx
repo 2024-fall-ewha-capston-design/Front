@@ -5,14 +5,20 @@ import { useState } from "react";
 import MemberItem from "../../components/chatroom/MemberItem";
 import { deleteChatRoom, putManager } from "../../api/chatroom";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import defaultProfile from "../../assets/chat/defaultprofile.svg";
+import ModalComponent from "../../components/chatroom/ModalComponent"; // 모달 컴포넌트 경로
 
 const OwnerPage = () => {
   const [name, setName] = useState("");
   const { roomId } = useParams();
   const location = useLocation();
-  const participantList = location.state?.participantList || [];
+  const [participantList, setParticipantList] = useState(
+    location.state?.participantList || []
+  );
   const roomName = location.state?.roomName;
   const [selectedId, setSelectedId] = useState(""); // 하나만 선택되도록 상태 추가
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newManagerNickname, setNewManagerNickname] = useState("");
   const navigate = useNavigate();
   // 방장 변경 API 연결
   const updateManager = async () => {
@@ -23,6 +29,19 @@ const OwnerPage = () => {
       }
       console.log("선택된 방장 ID:", selectedId);
       const response = await putManager(roomId, selectedId);
+      const selectedMember = participantList.find(
+        (p) => p.participantId === selectedId
+      );
+
+      if (selectedMember) {
+        setNewManagerNickname(selectedMember.roomNickname);
+        setIsModalOpen(true); // 모달 열기
+      }
+      const updatedList = participantList.map((p) => ({
+        ...p,
+        isOwner: p.participantId === selectedId,
+      }));
+      setParticipantList(updatedList);
       return response;
     } catch (err) {
       console.error(err);
@@ -52,7 +71,7 @@ const OwnerPage = () => {
 
   return (
     <Layout>
-      <TopBarCommon text="방장 권한" onSubmit={updateManager} />
+      <TopBarCommon text="방장 권한" />
       <Title>{roomName}</Title>
       <SearchContainer>
         <SearchIconWrapper>
@@ -69,7 +88,7 @@ const OwnerPage = () => {
           <MemberItem
             key={participant.id}
             memberId={participant.participantId} // 고유 ID
-            profile={participant.participantImgUrl}
+            profile={participant.participantImgUrl || defaultProfile}
             isOwner={participant.isOwner}
             name={participant.roomNickname}
             selectedId={selectedId}
@@ -77,12 +96,22 @@ const OwnerPage = () => {
           />
         ))}
       </MemberContainer>
+      <Button onClick={updateManager}>방장 변경</Button>
       <DeleteContainer onClick={delChatRoom}>
         <Text>{roomName} 삭제</Text>
         <SubText>
           방장 권한으로 삭제하시면 채팅방의 모든 정보가 다 사라집니다
         </SubText>
       </DeleteContainer>
+      {isModalOpen && (
+        <ModalComponent
+          roomName="방장 변경"
+          message={`${newManagerNickname}님이 새로운 방장이 되었습니다!`}
+          roomImg={null} // 필요한 경우 기본 이미지
+          isSecretChatRoom={false}
+          onConfirm={() => setIsModalOpen(false)}
+        />
+      )}
     </Layout>
   );
 };
@@ -147,4 +176,15 @@ const Text = styled.span`
 `;
 const SubText = styled.span`
   font-size: 10px;
+`;
+
+const Button = styled.button`
+  display: flex;
+  width: 80px;
+  background-color: var(--white);
+  color: var(--black);
+  border-radius: 8px;
+  padding: 5px;
+  border: 1px solid var(--gray-200);
+  justify-content: center;
 `;

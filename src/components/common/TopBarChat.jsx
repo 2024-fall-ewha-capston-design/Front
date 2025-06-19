@@ -38,7 +38,7 @@ const Layout = styled.div`
 `;
 
 const Text = styled.span`
-  font-size: 15px;
+  font-size: 16px;
   margin-left: 15px;
 `;
 
@@ -47,7 +47,7 @@ const StyledAddChat = styled(AddChat)`
   right: 1px;
   margin-right: 15px;
   cursor: pointer;
-  width: 19px;
+  width: 23px;
 `;
 
 const StyledChatCode = styled(ChatCode)`
@@ -59,11 +59,10 @@ const StyledChatCode = styled(ChatCode)`
 `;
 
 const StyledSearch = styled(Search)`
-  width: 21px;
-  height: 21px;
+  width: 23px;
+  height: 23px;
   position: absolute;
   right: 64px;
   margin-right: 15px;
   cursor: pointer;
-  width: 23px;
 `;

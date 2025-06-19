@@ -8,9 +8,15 @@ const TopBarCommon = ({ text }) => {
   const navigate = useNavigate();
   return (
     <Layout>
-      <Arrow onClick={() => navigate(-1)} />
-      <Text>{text}</Text>
-      <ArrowW />
+      <Left>
+        <Arrow onClick={() => navigate(-1)} />
+      </Left>
+      <Center>
+        <Text>{text}</Text>
+      </Center>
+      <Right>
+        <ArrowW />
+      </Right>
     </Layout>
   );
 };
@@ -20,16 +26,38 @@ export default TopBarCommon;
 const Layout = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: space-between;
+  align-items: center;
+  justify-content: space-between;
   position: fixed;
   top: 0;
-  gap: 100px;
-  width: 1005;
-  margin: 10px;
+  width: 100%;
+  max-width: 340px;
+  padding: 10px 16px;
   background-color: var(--white);
+`;
+
+const Left = styled.div`
+  width: 24px;
+  display: flex;
+  align-items: center;
+`;
+
+const Center = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+`;
+
+const Right = styled.div`
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 const Text = styled.span`
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
